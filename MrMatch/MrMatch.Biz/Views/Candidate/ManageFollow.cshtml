@@ -1,0 +1,103 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "ManageFollow";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>收藏夹管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>拍卖</li>
+                            <li class="active">收藏夹管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appManageFollow" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row ">
+            <div class="col col-md-8 ">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">收藏夹列表</strong>
+                    </div>
+                    <div class="card-body" id="FolderList">
+                        <div class="col col-md-4 folder-block color-gray" v-for="(item,i) in folders" v-cloak>
+                            <a class="btn btn-block btn-default folder-item">{{item.FolderName}}</a>
+                        </div>
+                    </div> <!-- /.table-stats -->
+                </div>
+
+
+            </div>
+            <div class="col col-md-4 ">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">新增</strong>
+                    </div>
+                    <div class="card-body" style="min-height:94px;">
+                        <div class="form-group" id="FormNew">
+                            <el-input value="" placeholder="如：互联网运营、HRD..." name="NameNew" id="NameNew" v-model="newFolderName" />
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-info" id="FormSubmit" @@click="saveUserFolder"><i class="fas fa-plus-circle"></i> 提交</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">编辑</strong>
+                    </div>
+                    <div class="card-body" style="min-height:94px;">
+                        <div class="form-group" id="FormModify">
+                            <el-select v-model="selectFolders" placeholder="选择收藏夹" style="width:100%;">
+                                <el-option v-for="item in folders"
+                                           :key="item.PKID"
+                                           :label="item.FolderName"
+                                           :value="item.PKID">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div id="ResultEdit" class="form-group hidden">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline pull-left " id="FormDel" @@click="delFolder"><i class="fas fa-times-circle"></i> 删除</button>
+                        <button type="button" class="btn btn-info pull-right " id="FormEdit" @@click="clickEditFolder"><i class="fas fa-edit"></i> 修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <el-dialog title="编辑"
+               :visible.sync="editFollowDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            <p>编辑收藏夹</p>
+            <input type="text" name="editFolderName" v-model="editFolderName" placeholder="输入新的收藏夹名称" class="el-input__inner" />
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="editFollowDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="editFolder">保 存</el-button>
+        </span>
+    </el-dialog>
+</div>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/manage.js")" ></script>

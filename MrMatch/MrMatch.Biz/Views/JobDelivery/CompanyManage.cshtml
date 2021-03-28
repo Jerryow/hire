@@ -1,0 +1,121 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "CompanyManage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>企业管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>Job Board</li>
+                            <li class="active">企业管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appCompanyManage" v-cloak>
+    <div class="animated fadeIn">
+
+        <div class="row">
+            <div class="col-md-12">
+                <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left" class="publish-form" onsubmit="return false;">
+                    <div class="card">
+                        <div class="card-body ">
+                            <div class="row margin-bottom-10  ">
+                                <div class="col col-12 col-md-4">
+                                    <el-form-item label="公司全称"  label-width="80px">
+                                        <el-input v-model="form.CompanyName" placeholder="请输入公司全称" @@keyup.enter.native="getAgentCompanyList('search')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="col col-12 col-md-6">
+                                    <button type="button" class="btn btn-info" @@click="getAgentCompanyList('search')"> 搜索</button>
+                                    <button type="button" class="btn btn-outline-info"  @@click="companyHandleClick"> 新增企业 </button>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10  ">
+                                <div class="col col-12 "> 
+                                    <el-table
+                                        :data="tableData"
+                                        border
+                                        empty-text="未找到相关企业"
+                                        style="width: 100%">
+                                        <el-table-column
+                                            prop="CompanyName"
+                                            label="公司全称">
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="ShortName"
+                                            label="对外显示名称">
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="City"
+                                            label="所在城市">
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="JobNumber"
+                                            label="职位数量">
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="更新时间">
+                                            <template slot-scope="scope">
+                                            <span style="margin-left: 10px">{{ scope.row.LastModifiedTime | DateFilter }}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="操作">
+                                            <template slot-scope="scope">
+                                            @*<el-button  type="text" size="small">查看</el-button>*@
+                                            <el-button  @@click="companyHandleClick(scope.row)" type="text" size="small">编辑</el-button>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </el-form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                         <el-pagination
+                          :total="pagenation.total"
+                          @@current-change="currentChange"
+                          layout="prev, pager, next">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div><!-- .animated -->
+    <edit-company-dialog :option="editCompanyData" :visible="editCompanyDialog" @@hide="editCompanyDialog = false" @@result="saveJobCompany"></edit-company-dialog>
+</div>
+
+<style>
+    .el-table__empty-block {
+        width:100%!important;
+    }
+</style>
+
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/pagecommon/dialogs/editCompanyDialog.js")"></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/jobDelivery/companyManage.js")"></script>

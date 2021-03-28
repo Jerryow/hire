@@ -1,0 +1,48 @@
+﻿@import "../_variable.scss";
+
+@for $i from 6 through 19 {
+    .f#{$i*2} {
+        font-size: $i*2px;
+    }
+}
+
+//color
+.bg-primary {
+    color: #fff;
+    background: $bg-primary !important;
+}
+
+.line-primary {
+    // color: $text_theme!important;
+    border-color: $text-primary !important;
+}
+
+.color-primary {
+    color: $color-primary!important;
+}
+
+.text-right{
+    text-align:right;
+}
+
+body ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+body ::-webkit-scrollbar-corner {
+    background-color: #f1f1f1;
+}
+body ::-webkit-scrollbar-thumb {
+    height: 50px;
+    background-color: #ddd;
+    border-radius: 10px;
+}
+body ::-webkit-scrollbar-track-piece {
+    background-color: #f1f1f1;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+}
+::selection {
+    color: #fff;
+    background: $color-primary;
+}

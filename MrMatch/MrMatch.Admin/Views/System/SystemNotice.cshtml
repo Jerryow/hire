@@ -1,0 +1,196 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "SystemNotice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-user"></i> 系统消息推送
+        <small>系统设置</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-laptop"></i> 系统设置</li>
+        <li class="active"><i class="fas fa-user"></i> 系统消息推送</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+
+    <div class="box" id="appSystemNotice">
+        <div class="box-header">
+            <div class="col-sm-4 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    <el-button @@click="addUser('form','add')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                </div>
+            </div>
+            <div class="col-sm-5">
+
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+
+        <div class="box-body">
+            <template>
+                <el-table :data="tableData"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="50px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="MessageSubject"
+                                     label="消息主题"
+                                     width="150px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="MessageContent"
+                                     label="消息内容"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="SendClient"
+                                     label="接收端"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag type="primary"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.SendClient | sendTo}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="MessageType"
+                                     label="消息类型"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag type="primary"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.MessageType | msgType}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="IsFinish"
+                                     label="是否已推送"
+                                     width="60px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.IsActivated)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.IsFinish | isFinish}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="CreatedTime"
+                                     label="创建时间"
+                                     width="150px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <p>{{scope.row.CreatedTime | formatDate}}</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作"
+                                     width="100px">
+                        <template slot-scope="scope">
+                            <el-button @@click="sendWebsocket(scope.row.PKID)" type="text" size="medium" v-if="scope.row.IsFinish?false:true">推送</el-button>
+                            <el-button @@click="updateUserFill(scope.row.PKID,'update')" type="text" size="medium" v-if="scope.row.IsFinish?false:true">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div><!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm"><i class="fas fa-redo"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+        <el-dialog title="新增消息" :visible.sync="dialogVisible" :before-close="closeModal" :close-on-press-escape="diaClose" :close-on-click-modal="diaClose">
+            <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules" label-width="80px;">
+                <el-form-item label="消息主题*" prop="MessageSubject">
+                    <el-input v-model="form.MessageSubject" placeholder="请输入消息主题(必填)"></el-input>
+                </el-form-item>
+                <el-form-item label="消息内容*" prop="MessageContent">
+                    <el-input type="textarea" :rows="6" v-model="form.MessageContent" placeholder="请输入消息内容(必填)"></el-input>
+                </el-form-item>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="接收端*" prop="SendTo">
+                            <el-select v-model="form.SendClient" placeholder="请选择接收端" style="width:100%">
+                                <el-option v-for="item in sendToList" :label="item.display" :value="item.val"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="1">
+                        <el-form-item>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="接收类型*" prop="MessageType">
+                            <el-select v-model="form.MessageType" placeholder="请选择接收类型" style="width:100%" @@change="selectChange">
+                                <el-option v-for="item in msgTypeList" :label="item.display" :value="item.val"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="用户编码*">
+                            <el-select v-model="usersID"
+                                       filterable
+                                       multiple
+                                       collapse-tags
+                                       style="width:100%"
+                                       placeholder="请选择"
+                                       :disabled="inputDisable">
+                                <el-option v-for="item in users"
+                                           :key="item.id"
+                                           :label="item.phone"
+                                           :value="item.id">
+                                </el-option>
+                            </el-select>
+                            @*<el-input v-model="form.UserIDs" placeholder="当'接受类型'为'指定用户时'必填" :disabled="inputDisable"></el-input>*@
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item label="备注">
+                    <el-input type="textarea" :rows="6" placeholder="请输入内容" v-model="form.Remark">
+                    </el-input>
+                </el-form-item>
+            </el-form>
+
+
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitForm('form')" v-if="btnShow.addShow">新增</el-button>
+                <el-button type="primary" @@click="updateForm('form')" v-if="btnShow.updateShow">修改</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+
+
+<script src="@Html.GetCssJsUrl("/Js/system/SystemNotice.js")">
+</script>

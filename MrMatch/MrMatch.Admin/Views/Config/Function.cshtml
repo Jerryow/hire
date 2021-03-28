@@ -1,0 +1,244 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "Function";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-chair"></i> 职能数据
+        <small>基础数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-file"></i> 基础数据</li>
+        <li class="active"><i class="fas fa-chair"></i> 职能数据</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box" id="appTag">
+        <div class="box-header">
+            <div class="col-sm-8 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    @*<label>
+            第一级
+            <el-select v-model="searchSelect.firstSel" filterable @@change="getSelectChange">
+                <el-option value="0">无</el-option>
+                <el-option v-for="item in searchSelect.firstFuncList" :label="item.Name" :value="item.ID"></el-option>
+            </el-select>
+            <button class="btn btn-primary btn-sm" @@click="getAllFirstFunc">查所有第一级</button>
+            <button class="btn btn-primary btn-sm" @@click="getSelectFunc">查选中第一级的所有子级</button>
+        </label>*@
+                    @*<label>
+            第二级
+            <el-select v-model="searchSelect.secondSel" filterable>
+                <el-option v-for="item in searchSelect.secondFuncList" :label="item.Name" :value="item.ID"></el-option>
+            </el-select>
+            <button class="btn btn-default btn-sm" @@click="getSelectCityFunc">查选中第二级的所有子级</button>
+        </label>*@
+                    <el-button @@click="add('form','add')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                    <el-button @@click="setCache()" type="success" size="small"><i class="fas fa-plus"></i>存入缓存</el-button>
+                </div>
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+
+        <div class="box-body">
+            <!-- DB : Cfg_CountryInfo -->
+            <template>
+                <el-table :data="tableData"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="FunctionName"
+                                     label="职能名称"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ParentName"
+                                     label="父级职能"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="SortNum"
+                                     label="排序"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="OnEnabled"
+                                     label="是否启用"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :disable-transitions="false">
+                                <p>{{scope.row.OnEnabled | onEnable}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="IsPopular"
+                                     label="是否热门职能"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :disable-transitions="false">
+                                <p>{{scope.row.IsPopular | isPopular}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作"
+                                     width="200px">
+                        <template slot-scope="scope">
+                            <el-button @@click="addTwo(scope.row.PKID)" type="text" size="medium">新增子职能</el-button>
+                            <el-button @@click="addThree(scope.row.PKID)" type="text" size="medium">增加/编辑关联关系</el-button>
+                            <el-button @@click="updateFill(scope.row.PKID,'update')" type="text" size="medium">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div><!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" @@click="refresh"><i class="fa fa-refresh"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+        <el-dialog :title="dialogArgs.title"
+                   :visible.sync="dialogArgs.dialogVisible"
+                   :before-close="closeModal"
+                   :close-on-press-escape="dialogArgs.diaClose"
+                   :close-on-click-modal="dialogArgs.diaClose">
+            <el-form ref="form" :model="form" :label-position="dialogArgs.labelPosition" :rules="rules" label-width="80px;">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="父职能*" prop="ParentID">
+                            <el-select v-model="form.ParentID" filterable placeholder="请选择父职能" style="width:100%">
+                                <el-option v-for="item in allFuncList" :label="item.FunctionName" :value="item.PKID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="职能*" prop="FunctionName">
+                            <el-input v-model="form.FunctionName" placeholder="请输入职能名称(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="排序*" prop="SortNum">
+                            <el-input v-model="form.SortNum" placeholder="请输入排序(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="form.OnEnabled"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="是否热门数据*">
+                            <el-switch v-model="form.IsPopular"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitForm('form')" v-if="btnShow.addShow">新增</el-button>
+                <el-button type="primary" @@click="updateForm('form')" v-if="btnShow.updateShow">修改</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog :title="dialogSecondArgs.title"
+                   :visible.sync="dialogSecondArgs.dialogVisible"
+                   :before-close="closeModalTwo"
+                   :close-on-press-escape="dialogSecondArgs.diaClose"
+                   :close-on-click-modal="dialogSecondArgs.diaClose">
+            <el-form ref="formTwo" :model="formTwo" :label-position="dialogSecondArgs.labelPosition" :rules="rules" label-width="80px;">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="职能*" prop="FunctionName">
+                            <el-input v-model="formTwo.FunctionName" placeholder="请输入职能名称(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="排序*" prop="SortNum">
+                            <el-input v-model="formTwo.SortNum" placeholder="请输入排序(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="formTwo.OnEnabled"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitFormTwo('formTwo')">新增</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog :title="dialogThreeArgs.title"
+                   :visible.sync="dialogThreeArgs.dialogVisible"
+                   :before-close="closeModalThree"
+                   :close-on-press-escape="dialogThreeArgs.diaClose"
+                   :close-on-click-modal="dialogThreeArgs.diaClose">
+            <el-form ref="formThree" :model="formTwo" :label-position="dialogThreeArgs.labelPosition" :rules="rules" label-width="80px;">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="职能*">
+                            <el-select v-model="SkillIDs" filterable multiple placeholder="请选择">
+                                <el-option v-for="item in skillList"
+                                           :key="item.PKID"
+                                           :label="item.SkillName"
+                                           :value="item.PKID">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitFormThree('formThree')">新增</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+
+<script src="@Html.GetCssJsUrl("/Js/config/Function.js")">
+</script>

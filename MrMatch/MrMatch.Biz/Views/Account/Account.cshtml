@@ -1,0 +1,126 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>团队成员</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">团队成员</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appAccount" v-cloak>
+    <div class="animated fadeIn">
+        <div class="ui-typography">
+            <div class="row">
+                <div class="col col-md-12 ">
+                    <div class="card">
+                        <div class="card-header">
+                            <strong class="card-title">团队成员</strong>
+                        </div>
+                        <div class="table-stats order-table ov-h">
+                            <table class="table ">
+                                <thead>
+                                    <tr class="text-center">
+                                        @*<th>编码</th>*@
+                                        <th>称呼</th>
+                                        <th>邮箱</th>
+                                        <th>管理</th>
+                                        <th>状态</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in accountList">
+                                        <td class="text-center"><span class="name">{{item.AccountName}}</span></td>
+                                        <td class="text-center">{{item.Email}}</td>
+                                        <td class="text-center">{{item.IsAdmin?"管理员":"普通用户"}}</td>
+                                        <td class="text-info text-center stateTxt" v-if="item.OnActive">正常</td>
+                                        <td class="text-gray text-center stateTxt" v-if="!item.OnActive">停用</td>
+                                        <td class="text-center" v-if="account.IsAdmin&&!item.IsAdmin&&item.OnActive"><button class="btn btn-sm btn-info" @@click="updateActivity('停用',item.PKID)">停用</button></td>
+                                        <td class="text-center" v-else-if="!item.OnActive"><button class="btn btn-sm btn-info" @@click="updateActivity('启用',item.PKID)">启用</button></td>
+                                        <td class="text-center" v-else> -- </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div> <!-- /.table-stats -->
+                    </div>
+
+
+                </div>
+                <div class="col col-md-12">
+                    <div class="card ">
+                        <div class="card-header">
+                            <strong class="card-title">邀请同事</strong>
+                        </div>
+                        <div class="card-body card-block">
+
+
+                            <div class="row">
+                                <div class="col col-md-8">
+                                    <div class=" form-group margin-bottom-30">
+                                        <label>邮箱</label>
+                                        <div class="input-group">
+                                            <input type="text" placeholder="输入同事的邮箱" class="form-control" v-model="form.Email">
+                                            <div class="input-group-addon" style="border-radius:0; border-left:0; border-right:0;"><i class="fas fa-at"></i></div>
+                                            <input type="text" id="Email" name="domain" disabled="disabled" class="form-control col-sm-4" :value="account.Domain">
+                                        </div>
+                                    </div>
+                                    <div class="form-group margin-bottom-30">
+                                        <label>身份</label>
+                                        <div class="input-group">
+                                            <select name="IsAdmin" id="IsAdmin" class="form-control">
+                                                <option value="0">普通成员</option>
+                                                @*<option value="1" disabled="disabled">管理员</option>*@
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col col-md-4">
+                                    <div class=" form-group margin-bottom-30 ">
+                                        <pre class="color-gray  bg-gray-light" style="padding:10px; border-radius:5px; font-size:14px;">说明：
+        > 您只能邀请同企业同事加入您的团队。
+        > 发送邀请后，您邀请的同事将会收到邀请邮件，点击文内链接，即刻完成注册加入团队。
+        > 同一账号邀请间隔不得小于5分钟。
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-right">
+                            <button type="button" class="btn btn-info" v-if="account.IsAdmin" @@click="sendInvite" :disabled="loading.submitLoading">
+                            <i :class="'fab '+(loading.submitLoading?'el-icon-loading':'fa-telegram-plane')"></i> 发送邀请</button>
+
+                            <small class="color-gray" v-if="!account.IsAdmin"><i class="far fa-info-circle"></i> 此功能仅管理可操作！</small>
+                            <button type="button" class="btn btn-info disabled" v-if="!account.IsAdmin" disabled="disabled"><i class="fab fa-telegram-plane"></i> 发送邀请</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/account.js")"></script>

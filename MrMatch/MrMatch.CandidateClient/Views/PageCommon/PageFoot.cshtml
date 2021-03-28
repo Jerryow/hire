@@ -1,0 +1,78 @@
+﻿
+@{
+    Layout = null;
+}
+
+<div class="footer">
+    <div class="container-inner">
+        <div class="footer-active">
+            <div class="clearfix ">
+                <div class="pull-left logo-box">
+                     <div class="">
+                        <a href="./index.html">
+                            <!-- <div class="logo footer-logo inline-block"></div> -->
+                            <img class="logo footer-logo inline-block" src="~/Assets/images/login_logo.png" alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="pull-right">
+                        <div class="ercodes">
+                            <ul class="clearfix">
+                                <li title="猫奇公众号">
+                                    <div class="icon-round"><span class="iconfont icon-weixin f16"></span></div>
+                                    <div class="ercodes-side">
+                                        <div class="er"><img src="~/Assets/images/er_wx.jpg" alt=""></div>
+                                        <p>猫奇 MR MATCH</p>
+                                    </div>
+                                </li>
+                                <li title="猫奇知乎主页">
+                                    <a href="https://www.zhihu.com/org/mao-qi-zhi-ren-xing-qiu/activities" target="_blank">
+                                        <div class="icon-round"><span class="iconfont icon-zhihu f20"></span></div>
+                                    </a>
+                                </li>
+                                <li title="猫奇领英主页" >
+                                    <a href="https://www.linkedin.com/company/18985053/admin/" target="_blank">
+                                        <div class="icon-round"><span class="iconfont icon-lingying f20"></span></div>
+                                    </a>
+                                </li>
+                                <li title="返回顶部">
+                                    <a href="javascript:;" >
+                                        <div class="go-top icon-round"><span class="el-icon-arrow-up"></span></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+            <div class="footer-nav">
+                @*<a href="./findjob.html">找工作</a>
+                <a href="./hiring.html">招贤才</a>*@
+                <a href="https://www.mrmatch.net/talent_protocol.html" title="猫奇用户协议" target="_black">法律条款</a>
+                <a href="https://www.mrmatch.net/privacy_policy.html"  title="猫奇隐私政策" target="_black">隐私政策</a>
+                <a href="https://www.mrmatch.net/about.html" target="_black" style="margin-right:0;">关于猫奇</a>
+            </div>
+        </div>
+        <div class="clearfix footer-bottom">
+            <div class="pull-left">
+                <div class="email f14 ">
+                    <p>个人客服邮箱：<a href="mailto:customservice@mrmatch.net">customservice@mrmatch.net</a></p>
+                    <p>企业客服邮箱：<a href="mailto:business@mrmatch.net">business@mrmatch.net</a></p>
+                </div>
+            </div>
+            <div class="pull-right text-right">
+                <div class="info ">
+                    <p><span>©mrmatch.net 2019</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>沪ICP备19004265号</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $(".go-top").on("click", function() {
+            $("html,body").animate({
+                scrollTop: "0px"
+            }, 400)
+        })
+    })
+</script>

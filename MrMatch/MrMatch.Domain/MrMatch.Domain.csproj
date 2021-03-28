@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{313E2D2C-50FA-4CE0-858E-E391F70FEA96}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MrMatch.Domain</RootNamespace>
+    <AssemblyName>MrMatch.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EntityBase\CommunityEntity.cs" />
+    <Compile Include="EntityBase\EntityDto.cs" />
+    <Compile Include="EntityBase\ICommunityEntity.cs" />
+    <Compile Include="EntityBase\IEntity.cs" />
+    <Compile Include="EntityBase\Entity.cs" />
+    <Compile Include="EntityBase\Repository\ICommunityRepository.cs" />
+    <Compile Include="EntityBase\Repository\IRepositoryTest.cs" />
+    <Compile Include="EntityBase\Repository\IRepository.cs" />
+    <Compile Include="EntityBase\Repository\IUnitOfWork.cs" />
+    <Compile Include="EntityBase\Repository\RepositoriesBase.cs" />
+    <Compile Include="Models\Cfg\TP_Country.cs" />
+    <Compile Include="Models\Cfg\TP_District.cs" />
+    <Compile Include="Models\Cfg\TP_Function.cs" />
+    <Compile Include="Models\Cfg\TP_School.cs" />
+    <Compile Include="Models\Cfg\TP_FunctionSkillsRelation.cs" />
+    <Compile Include="Models\Cfg\TP_Skills.cs" />
+    <Compile Include="Models\Cfg\TP_Tags.cs" />
+    <Compile Include="Models\Com\TP_Account.cs" />
+    <Compile Include="Models\Com\TP_AccountInfoSearchLog.cs" />
+    <Compile Include="Models\Com\TP_AccountNotice.cs" />
+    <Compile Include="Models\Com\TP_AccountVerify.cs" />
+    <Compile Include="Models\Com\TP_AgentCompany.cs" />
+    <Compile Include="Models\Com\TP_Company.cs" />
+    <Compile Include="Models\Com\TP_CompanyContract.cs" />
+    <Compile Include="Models\Com\TP_AccountInvitation.cs" />
+    <Compile Include="Models\Com\TP_LetterTemplate.cs" />
+    <Compile Include="Models\Com\TP_AccountFolder.cs" />
+    <Compile Include="Models\Com\TP_AccountFollow.cs" />
+    <Compile Include="Models\Com\TP_AccountFollowFolder.cs" />
+    <Compile Include="Models\Job\TP_JobApply.cs" />
+    <Compile Include="Models\Job\TP_JobComment.cs" />
+    <Compile Include="Models\Job\TP_JobDraft.cs" />
+    <Compile Include="Models\Job\TP_JobInterview.cs" />
+    <Compile Include="Models\Job\TP_Job.cs" />
+    <Compile Include="Models\Job\TP_JobResponse.cs" />
+    <Compile Include="Models\Job\TP_JobView.cs" />
+    <Compile Include="Models\Com\TP_ProfileView.cs" />
+    <Compile Include="Models\Snapshot\TP_WorkExperienceSnap.cs" />
+    <Compile Include="Models\Snapshot\TP_EducationSnap.cs" />
+    <Compile Include="Models\Snapshot\TP_ProfileSnap.cs" />
+    <Compile Include="Models\Sys\TP_NoticeUser.cs" />
+    <Compile Include="Models\Usr\TP_UserMessage.cs" />
+    <Compile Include="Models\Usr\TP_UserMessageRead.cs" />
+    <Compile Include="Models\Sys\TP_MessageConfig.cs" />
+    <Compile Include="Models\Sys\TP_MessageTemplate.cs" />
+    <Compile Include="Models\Sys\TP_Notice.cs" />
+    <Compile Include="Models\Sys\TP_SiteConfig.cs" />
+    <Compile Include="Models\Sys\TP_SystemUser.cs" />
+    <Compile Include="Models\Usr\TP_UserAvoid.cs" />
+    <Compile Include="Models\Usr\TP_UserEducation.cs" />
+    <Compile Include="Models\Usr\TP_UserFeedback.cs" />
+    <Compile Include="Models\Usr\TP_UserJobFollow.cs" />
+    <Compile Include="Models\Usr\TP_UserJobIntention.cs" />
+    <Compile Include="Models\Usr\TP_UserProfile.cs" />
+    <Compile Include="Models\Usr\TP_UserGuidance.cs" />
+    <Compile Include="Models\Usr\TP_UserReport.cs" />
+    <Compile Include="Models\Usr\TP_UserTags.cs" />
+    <Compile Include="Models\Usr\TP_UserVerify.cs" />
+    <Compile Include="Models\Usr\TP_UserWorkExperience.cs" />
+    <Compile Include="Models\Wei\TP_AccessToken.cs" />
+    <Compile Include="Models\Wei\TP_WechatMessage.cs" />
+    <Compile Include="Models\Wei\TP_WechatUser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

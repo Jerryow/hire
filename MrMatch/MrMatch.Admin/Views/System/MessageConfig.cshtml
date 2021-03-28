@@ -1,0 +1,236 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "MessageConfig";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-hand-pointer"></i> 消息配置
+        <small>系统数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-handshake"></i> 系统数据</li>
+        <li class="active"><i class="fas fa-hand-pointer"></i> 消息配置</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box" id="appMsgConfig">
+        <div class="box-header">
+            <div class="col-sm-4 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    <el-button @@click="addConfig('form')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                </div>
+            </div>
+            <div class="col-sm-5">
+
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="根据登录名名字搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+            <!-- DB : Job_ApplyInfo -->
+
+            <template>
+                <el-table :data="tableData"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="50px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ConfigType"
+                                     label="配置类型"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag type="primary"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.ConfigType | cfgType}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="ProviderName"
+                                     label="供应商名字"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ApiName"
+                                     label="接口名称"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ApiUrl"
+                                     label="接口URL"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="Port"
+                                     label="端口"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="EnableSsl"
+                                     label="是否SSL加密"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.EnableSsl)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.EnableSsl | sslFilter}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="SenderName"
+                                     label="发送者名称"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="IsActivated"
+                                     label="是否启用"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.IsActivated)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.IsActivated | activeFilter}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="100px">
+                        <template slot-scope="scope">
+                            <el-button @@click="edit(scope.row.PKID)" type="text" size="medium">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" @@click="reload"><i class="fas fa-redo"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+
+        <el-dialog title="新增配置" :visible.sync="dialogVisible" :before-close="closeModal" :close-on-press-escape="diaClose" :close-on-click-modal="diaClose">
+            <el-form ref="addForm" :model="addForm" :label-position="labelPosition" :rules="rules" class="demo-form-inline">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="配置类型*" prop="ConfigType">
+                            <el-select v-model="addForm.ConfigType" placeholder="请选择类型">
+                                <el-option label="短信" value="10" selected></el-option>
+                                <el-option label="邮件" value="20"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="供应商名字*" prop="ProviderName">
+                            <el-input v-model="addForm.ProviderName" placeholder="请输入供应商名字(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="Api名*" prop="ApiName">
+                            <el-input v-model="addForm.ApiName" placeholder="请输入Api名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="Api编码*" prop="ApiCode">
+                            <el-input v-model="addForm.ApiCode" placeholder="请输入Api编码(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="Api地址*" prop="ApiUrl">
+                            <el-input v-model="addForm.ApiUrl" placeholder="请输入Api地址(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="端口*" prop="Port">
+                            <el-input v-model="addForm.Port" placeholder="请输入端口(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="发送者名称*" prop="SenderName">
+                            <el-input v-model="addForm.SenderName" placeholder="请输入发送者名称(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="登录名*" prop="LoginName">
+                            <el-input v-model="addForm.LoginName" placeholder="请输入登录名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="密码*" prop="Password">
+                            <el-input type="password" style="display:none;"></el-input>
+                            <el-input v-model="addForm.Password" type="password" placeholder="请输入密码(必填)" auto-complete="new-password"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="验证密钥*" prop="VerifyKey">
+                            <el-input v-model="addForm.VerifyKey" placeholder="请输入验证密钥(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="签名*" prop="SignMark">
+                            <el-input v-model="addForm.SignMark" placeholder="请输入签名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="发送限制次数*" prop="TimesLimit">
+                            <el-input v-model="addForm.TimesLimit" placeholder="请输入发送限制次数(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否SSL加密*">
+                            <el-switch v-model="addForm.EnableSsl"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="addForm.IsActivated"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+            <span slot="footer" class="dialog-footer">
+                @*<el-button type="primary" @@click="submitForm('form')">提交</el-button>*@
+                <el-button type="primary" @@click="submitForm('addForm')">提交</el-button>
+                <el-button @@click="resetForm('addForm')">重置</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+
+
+<script src="@Html.GetCssJsUrl("/Js/system/MessageConfig.js")">
+</script>

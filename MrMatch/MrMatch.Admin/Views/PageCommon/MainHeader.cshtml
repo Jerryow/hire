@@ -1,0 +1,149 @@
+﻿
+@{
+    ViewBag.Title = "MainHeader";
+    Layout = null;
+}
+
+<header class="main-header">
+    <!-- Logo -->
+    <a href="/maintain/index" class="logo" style="background-repeat: no-repeat;">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>Mr</b></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg"><b>MrMatch</b></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top" role="navigation">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" style="font-size:14px;">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="fas fa-bars"></span>
+        </a>
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                <!-- User Account: style can be found in dropdown.less -->
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style=" line-height:20px; ">
+                        <i class="fas fa-user-circle" style="font-size:14px; color:#fff;"></i>
+                        <span class="hidden-xs" style="font-size:14px; color:#fff; "></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <button class="btn btn-default btn-flat" data-toggle="modal" data-target="#pwdPopups">修改密码</button>
+                            </div>
+                            <div class="pull-right">
+                                <button onclick="logout()" class="btn btn-default btn-flat">注销退出</button>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Control Sidebar Toggle Button -->
+                @*<li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fas fa-gears"></i></a>
+                    </li>*@
+            </ul>
+        </div>
+    </nav>
+</header>
+<div div class="modal fade" id="pwdPopups">
+    <div class="modal-dialog" style="width:1000px;">
+        <div>
+            <div class="login-box">
+                <div class="login-box-body">
+                    <div class="login-logo">
+                        <a><b>修改密码</b></a>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="密码" id="pwd1" />
+                        <span class="glyphicon glyphicon-lock form-control-feedback text-gray"></span>
+
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="新密码" id="pwd2" />
+                        <span class="glyphicon glyphicon-lock form-control-feedback text-light-blue"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="确认新密码" id="pwd3" />
+                        <span class="glyphicon glyphicon-lock form-control-feedback text-aqua"></span>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-xs-6">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="changePassword()">确认</button>
+                        </div><!-- /.col -->
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-primary btn-block btn-flat" data-dismiss="modal">取消</button>
+                        </div><!-- /.col -->
+                    </div>
+                </div><!-- /.login-box-body -->
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //$('#pwdPopups').on('shown.bs.modal', function () {
+        //    if (window.frames["frm"].$('#searchForSelectStationery').val() != "")
+        //        window.frames["frm"].$('#cleariconForSelectStationery').click();
+        //    var StationeryCheck = window.frames["frm"].$("#selectStationeryGrid").data("kendoGrid");
+        //});
+    });
+    function changePassword() {
+        var pwd1 = $("#pwd1").val();
+        var pwd2 = $("#pwd2").val();
+        var pwd3 = $("#pwd3").val();
+        if (pwd1 == "" || pwd2 == "" || pwd3 == "") {
+            alert("请输入密码！");
+            return;
+        }
+        if (pwd2 != pwd3) {
+            alert("两次密码不一致！");
+            return;
+        }
+
+        $.ajax({
+            type: "get",
+            datatype: "json",
+            url: "/api/passportapi/UpdatePwd",
+            data: {
+                "loginName": "@MrMatch.Admin.Handler.ActionFilters.CurrID.LoginName",
+                "oldPwd": pwd1,
+                "newPwd": pwd2
+            },
+            headers: {
+                "Authorization": "Bear " + _ticket
+            },
+            success: function (data) {
+                console.log(data);
+                if (!data.BoolResult) {
+                    alert(data.Message);
+                } else {
+                    alert("修改密码成功");
+                    //登录成功之后跳转
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function cancel() {
+        $("#pwdPopups").hide();
+    }
+
+    function logout() {
+        $.ajax({
+            url: "/api/passportapi/logout",
+            type: "get",
+            headers: {
+                "Authorization": "Bear " + _ticket
+            },
+            success: function (res) {
+                alert(res);
+                window.location.reload();
+            }
+        });
+    }
+</script>
+

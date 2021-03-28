@@ -1,0 +1,85 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "SiteConfig";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-cogs"></i> 系统配置
+        <small>系统设置</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-laptop"></i> 系统设置</li>
+        <li class="active"><i class="fas fa-cogs"></i> 系统配置</li>
+    </ol>
+</section>
+<section class="content">
+
+    <div class="box" id="appSysConfig">
+        <div class="box-header">
+            <div class="col-sm-4 no-padding">
+            </div>
+            <div class="col-sm-5">
+
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <el-button @@click="add('form')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+            <div class="col-md-10 margin-bottom-15">
+                <div class="col-md-1" style="width:30px;">ID</div>
+                <div class="col-md-1" style="width:150px;">名称</div>
+                <div class="col-md-1" style="width:100px;">编号</div>
+                <div class="col-md-4">内容</div>
+                <div class="col-md-1">操作</div>
+            </div>
+
+            <div class="col-md-10 margin-bottom-15" style="line-height:34px;" v-for="item in table">
+                <div class="col-md-1" style="width:30px;">{{item.PKID}}</div>
+                <div class="col-md-1" style="width:150px;">{{item.ConfigName}}</div>
+                <div class="col-md-1" style="width:100px;">{{item.ConfigCode}}</div>
+                <div class="col-md-4">
+                    <input v-bind:value="item.ConfigValue" v-bind:id="item.PKID" class="form-control" style="width:100%;" />
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary submit" @@click="update(item.ConfigCode)">编辑</button>
+                    <button type="button" class="btn btn-warm submit" @@click="setCache(item.PKID)">存入缓存</button>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" @@click="refresh"><i class="fas fa-redo"></i> 刷新</button>
+        </div>
+
+        <el-dialog title="新增配置" :visible.sync="dialogVisible" :before-close="closeModal" :close-on-press-escape="diaClose" :close-on-click-modal="diaClose">
+            <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules" label-width="80px;">
+                <el-form-item label="名称*" prop="ConfigName">
+                    <el-input v-model="form.ConfigName" placeholder="请输入名称(必填)"></el-input>
+                </el-form-item>
+                <el-form-item label="编号*" prop="ConfigCode">
+                    <el-input v-model="form.ConfigCode" placeholder="请输入编号(必填)"></el-input>
+                </el-form-item>
+                <el-form-item label="内容" prop="ConfigValue">
+                    <el-input v-model="form.ConfigValue" placeholder="请输入内容(必填)"></el-input>
+                </el-form-item>
+            </el-form>
+
+
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @@click="addConfig('form')" v-if="btnShow.addShow">新增</el-button>
+            <el-button type="primary" @@click="updateConfig('form')" v-if="btnShow.updateShow">修改</el-button>
+        </span>
+        </el-dialog>
+    </div>
+</section>
+
+
+<script src="@Html.GetCssJsUrl("/Js/System/SiteConfig.js")">
+</script>
+

@@ -1,0 +1,697 @@
+﻿@using MrMatch.CandidateClient.Handler;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <div id="" class="container-inner">
+        <div id="container" class="resume-container clearfix">
+            <div class="myresume-content pull-left">
+
+                <div id="appUserinfo" class="userinfo" v-cloak>
+                    <div class="item-primary" v-show="!isRedact">
+                        <div v-if="formData">
+                            <div class="flex">
+                                <div class="photo-upload"></div>
+                                <div class="userinfo-box">
+                                    <div class="name">
+                                        {{formData.RealName}}
+
+                                        <span class="item-redact" @@click="redact"> <i class="el-icon-edit"></i> 编辑</span>
+                                    
+                                    </div>
+                                    <div class="labels">
+                                        <p>
+                                            <span v-if="formData.Gender">{{formData.Gender|genderFilter}}</span>
+                                            <span v-if="formData.Birthday">{{formData.Birthday|formatDateDot}}</span>
+                                            <span v-if="formData.Education">{{formData.Education}}</span>
+                                            <span v-if="formData.Residence">{{formData.Residence}}</span>
+                                        </p>
+                                        <p>
+                                            <span v-if="formData.CurrentCompany">{{formData.CurrentCompany}}</span>
+                                            <span v-if="formData.CurrentPosition">{{formData.CurrentPosition}}</span>
+                                            <span v-if="formData.AnnualSalary">{{formData.AnnualSalary}}</span>
+                                            <span v-if="formData.JobStatus">{{formData.JobStatus|jobFilter}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="userinfo-introduc" v-if="formData.Introduction">
+                                <div class="title-sub">个人职业介绍与亮点</div>
+                                <div>
+                                    <div v-html="formData.Introduction">
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="flex">
+                                <div class="userinfo-box">
+                                    <div class="title">
+                                        基本信息
+                                        <span class="item-add" @@click="redact"><i class="el-icon-circle-plus-outline"></i>添加</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-show="isRedact" style="margin-top: -30px;">
+                        <div class="">
+                            <div class="title">基本信息</div>
+                            
+                            <el-form ref="form" :model="form" label-position="top" :rules="rules" label-width="80px;" >
+                                <div class="form-item">
+                                    <el-form-item label="姓名" prop="RealName">
+                                        <el-input v-model.trim="form.RealName" placeholder="请输入姓名"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="性别" prop="Gender">
+                                        <el-select v-model.trim="form.Gender"  placeholder="请选择性别" style="width:100%" @@change="denderChange">
+                                            <el-option v-for="(item, i) in Gender" :label="item.label" :value="item.value" :key="i"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="生日" prop="Birthday">
+                                        <el-date-picker v-model.trim="form.Birthday"
+                                                        type="date"
+                                                        value-format="yyyy-MM-dd"
+                                                        placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="学历" prop="Education">
+                                        <el-select v-model.trim="form.Education"  placeholder="请选择性别" style="width:100%" @@change="educationChange">
+                                            <el-option v-for="(item, i) in Education" :label="item.label" :value="item.value" :key="i"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="出生地" prop="BirthPlace">
+                                        <el-input v-model.trim="form.BirthPlace" placeholder="例如：北京，湖北武汉"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="居住地" prop="Residence">
+                                        <el-input v-model.trim="form.Residence" placeholder="例如：北京，湖北武汉(必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="户籍" prop="CensusRegister">
+                                        <el-input v-model.trim="form.CensusRegister" placeholder="例如：北京，湖北武汉"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="当前公司" prop="CurrentCompany">
+                                        <el-input v-model.trim="form.CurrentCompany" placeholder="若当前未非在职，请填写“非在职” (必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="当前职位" prop="CurrentPosition">
+                                        <el-input v-model.trim="form.CurrentPosition" placeholder="若当前未非在职，请填写“非在职” (必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="年薪(￥)" prop="AnnualSalary">
+                                        <el-input v-model.trim="form.AnnualSalary" placeholder="例如：150000" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="求职状态" prop="JobStatus">
+                                        <el-select v-model.trim="form.JobStatus"  placeholder="请选择性别" style="width:100%" @@change="denderChange">
+                                            <el-option v-for="(item, i) in JobStatus" :label="item.label" :value="item.value" :key="i"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item form-item-full">
+                                    <el-form-item label="个人职业介绍与亮点">
+                                        <el-input type="textarea" :rows="4" v-model="form.Introduction" placeholder="请简单介绍您的事业生涯与亮点"  maxlength="500" show-word-limit></el-input>
+                                    </el-form-item>
+                                </div>
+                                
+                            </el-form>
+
+                            <div class="item-active">
+                                <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                <button class="btn btn-primary" type="button" @@click="submitProfile('form')" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="appTag" class="apptag" v-cloak>
+                    <div class="item-primary" v-if="!isRedact">
+                        <div class="title">
+                            我的职业标签
+                            <span class="item-add" @@click="redact"> <i :class="form.PKID==0?'el-icon-circle-plus-outline':'el-icon-edit'"></i>{{form.PKID==0?'添加':'编辑'}} </span>
+                        </div>
+                        <div class="item-primary-content">
+                            <div class="tags">
+                                <div class="tag-item" v-for="(item, i) in tagListData" :key="i">{{item.Tags}} </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-if="isRedact">
+                        <div>
+                            <div class="title">编辑职业标签</div>
+                            <div>
+                                <div class="tag-selected">
+                                    <div class="tag-title">
+                                        已选择标签 <span>{{optTagList.length}}/10</span>
+                                    </div>
+                                    <div class="tags">
+                                        <div class="tag-item active" v-for="(item, i) in optTagList" :key="i" @@click="tagClose(item)">{{item.Tags}} </div>
+                                    </div>
+                                </div>
+                                <div class="tag-list">
+                                    <div class="tag-option" v-for="(option, index) in tagList" :key="index">
+                                        <div class="tag-title">{{option.Tags}}</div>
+                                        <div class="tag-option-list tags">
+                                            <div :class="'tag-item '+(item.isSelect?'active':'')" v-for="(item, i) in option.ChildrenTag" :key="i" @@click="tagClick(item)">{{item.Tags}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item-active">
+                                    <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                    <button class="btn btn-primary" type="button" @@click="saveUserTags" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="appIntention" class="intention" v-cloak>
+                    <div class="item-primary" v-if="!isRedact">
+                        <div class="title">
+                            求职意向
+                            <span class="item-add" @@click="redact"> <i :class="form.PKID==0?'el-icon-circle-plus-outline':'el-icon-edit'"></i>{{form.PKID==0?'添加':'编辑'}} </span>
+                        </div>
+                        <div class="intention-content" v-if="form.PKID !== null">
+                            <div class="intention-item primary-item" >
+                                <div class="intention-primary primary-item-p hover-none" v-show="!isRedact">
+                                    <div >
+                                        <div>过往职能: <span v-html="intentionInfo.Functions"></span></div>
+                                        <div>意向城市: <span v-html="form.Locations"></span> </div>
+                                        <div v-if="form.AnnualSalary">期望年薪: <span v-html="form.AnnualSalary"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-else>
+                        <div class="">
+                            <div class="title">{{form.PKID==0?'添加':'编辑'}}求职意向</div>
+                            <el-form ref="form" :model="form" :label-position="labelPosition" >
+                                <div class="form-item">
+                                    <div class="">
+                                        <div class="el-form-item__label">
+                                            <span style="color:#F56C6C">*</span> 请选择您过往的职能资历，有利于雇主更快定位您的资质
+                                        </div>
+                                        <div class="flex">
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(0,'function')" type="primary" style="margin-bottom:10px;">{{ !functionNames[0]?'':functionNames[0] }} <i v-if="!functionNames[0]" class="el-icon-plus color-primary"></i></div>
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(1,'function')" type="primary" style="margin-bottom:10px;">{{ !functionNames[1]?'':functionNames[1] }} <i v-if="!functionNames[1]" class="el-icon-plus color-primary"></i></div>
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(2,'function')" type="primary" style="margin-bottom:10px;">{{ !functionNames[2]?'':functionNames[2] }} <i v-if="!functionNames[2]" class="el-icon-plus color-primary"></i></div>
+                                        </div>
+                                    </div>
+                                    @*<div>
+                                        <div class="el-form-item__label">
+                                            <span style="color:#F56C6C">*</span> 请选择您接下来想要查看的职能方向，我们将给您投放相关方向的就职岗位
+                                        </div>
+                                        <div  class="flex">
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(0,'intention')" type="primary" style="margin-bottom:10px;">{{ !intentionNames[0]?'':intentionNames[0] }} <i v-if="!intentionNames[0]" class="el-icon-plus color-primary"></i></div>
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(1,'intention')" type="primary" style="margin-bottom:10px;">{{ !intentionNames[1]?'':intentionNames[1] }} <i v-if="!intentionNames[1]" class="el-icon-plus color-primary"></i></div>
+                                            <div class="function-item flex-sub" @@click="clickFunctionItem(2,'intention')" type="primary" style="margin-bottom:10px;">{{ !intentionNames[2]?'':intentionNames[2] }} <i v-if="!intentionNames[2]" class="el-icon-plus color-primary"></i></div>
+                                        </div>
+                                    </div>*@
+                                    <div>
+                                        <div class="el-form-item__label">
+                                            <span style="color:#F56C6C">*</span> 请选择您的意向城市(最多选择三个)
+                                        </div>
+                                        <div>
+                                            <div :class="'el-input__inner ' + (LocationIDs.length>0?'':'placeholder')" 
+                                                 style="font-size:16px;width:360px " 
+                                                 @@click="selectCity = true">{{LocationIDs.length>0?LocationNames.join(','):"请选择您的意向城市"}}</div>
+                                        </div>
+                                    </div>
+                                    <div style="width:360px">            
+                                        <el-form-item label="请填写您的期望年薪(￥)">
+                                            <el-input v-model.trim="form.AnnualSalary" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" placeholder="请输入期望年薪(￥)(选填)"></el-input>
+                                        </el-form-item>
+                                    </div>
+                                </div>
+                                <div class="item-active">
+                                    <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                    <button class="btn btn-primary" type="button" @@click="submitForm('form')" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                                </div>
+                            </el-form>
+                        </div>
+                    </div>
+                    
+    
+                    <el-dialog title="选择求职意向" :visible.sync="drawer" custom-class="select" top="10vh">
+                        <div class="function-select-box">
+                            <div :class="'function-select-option ' + (thirdList.length>0?'col3':(secondList.length>0?'col2':'col1'))">
+                                <div>
+                                    <div :class="'function-select-item ' + ((functionIDs[functionIndex]&&functionIDs[functionIndex][0] == item.value)?'active':'')" v-for="(item,i) in FunctionsList" :key="item.value" @@click="firstListClick(i)">
+                                        <div class="function-select-item--box">
+                                             <img src="../../Assets/images/func/hot.png" alt="hot" v-if="item.IsPopular" />{{item.label}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div :class="'function-select-option ' + (thirdList.length>0?'col3':(secondList.length>0?'col2':''))">
+                                <div>
+                                    <div :class="'function-select-item ' + ((functionIDs[functionIndex]&&functionIDs[functionIndex][1] == item.value)?'active':'')" v-for="(item,i) in secondList" :key="item.value" @@click="secondListClick(i)">{{item.label}}</div>
+                                </div>
+                            </div>
+                            <div :class="'function-select-option ' + (thirdList.length>0?'col3':'')">
+                                <div>
+                                    <div :class="'function-select-item ' + ((functionIDs[functionIndex]&&functionIDs[functionIndex].length == 3 &&functionIDs[functionIndex][2] == item.value)?'active':'')" v-for="(item,i) in thirdList" :key="item.value" @@click="thirdListClick(i)">{{item.label}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </el-dialog>
+    
+                    <el-dialog title="选择意向城市" :visible.sync="selectCity" custom-class="select" top="10vh">
+                        <div class="function-select-box city-select-box ">
+                            <div class="select-city clearfix">
+                                <div class="city-tab fl">
+                                    <div :class="'city-tab-item '+(selectCityIndex == 0?'active':'')" @@click="selectCityIndex = 0">热门城市</div>
+                                    <div :class="'city-tab-item '+(selectCityIndex == 1?'active':'')" @@click="selectCityIndex = 1">全部城市</div>
+                                </div>
+                                <div class="city-content fr" v-if="selectCityIndex == 0">
+                                    <div class="tag-list">
+                                        <div class="tag-option" >
+                                            <div class="tag-option-list tags">
+                                                <div :class="'tag-item '+(item.checked?'active':'')" v-for="(item, i) in districtList" :key="i" @@click="cityClick(item,i)">{{item.DistrictName}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="city-content fr" v-if="selectCityIndex == 1">
+                                    <div class="tag-list">
+                                        <div class="tag-option" v-for="(option, index) in allDistrictList" :key="index">
+                                            <div class="tag-title">{{option.DistrictName}}</div>
+                                            <div class="tag-option-list tags">
+                                                <div :class="'tag-item '+(item.checked?'active':'')" v-for="(item, i) in option.Children" :key="i" @@click="cityClick(item,i)">{{item.DistrictName}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </el-dialog>
+                </div>
+                
+                <div id="appWork" ref="" class="work" v-cloak>
+                    <div class="item-primary" v-if="!isRedact">
+                        <div class="title">
+                            工作经历
+                            <span class="item-add" @@click="redact"><i class="el-icon-circle-plus-outline"></i>添加</span>
+                        </div>
+                        <div class="work-content">
+                            <div class="work-item primary-item" v-for="(work,i) in workList"  :key="i">
+                                <div class="work-primary primary-item-p" v-if="!work.isRedact">
+                                    <div>
+                                        <div class="work-company">
+                                            {{work.CompanyName}}
+                                            <div class="item-primary-active right">
+                                                <div class="item-del" @@click="removeWork(work.PKID)"><i class="el-icon-delete"></i>删除</div>
+                                                <div class="item-redact" @@click="redactItem(work,i)"> <i class="el-icon-edit"></i>编辑</div>
+                                            </div>
+                                        </div>
+                                        <div class="labels">
+                                            <p>
+                                                <span>{{work.Position}}</span>
+                                                <span>{{work.StartDate.slice(0,7) | formatDate}} ~ {{work.ExpirationDate.slice(0,7) | formatDate}}</span>
+                                            </p>
+                                        </div>
+                                        <div class="work-intro clearfix">
+                                            <div class="" v-html="work._Introduction"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="primary-item-f " v-show="work.isRedact">
+                                    <div class="">
+                                        <div class="title">编辑工作经历</div>
+                            
+                                        <el-form ref="editForm" :model="editForm" :label-position="labelPosition" :rules="rules"  >
+                                            <div class="form-item">
+                                                <el-form-item label="公司名称" prop="CompanyName">
+                                                    <el-input v-model.trim="editForm.CompanyName" placeholder="请输入公司名称(必填)"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="头衔" prop="Position">
+                                                    <el-input v-model.trim="editForm.Position" placeholder="请输入头衔(必填)"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="开始时间" prop="StartDate">
+                                                    <el-date-picker v-model.trim="editForm.StartDate"
+                                                                    type="month"
+                                                                    value-format="yyyy-MM-dd"
+                                                                    placeholder="选择日期时间">
+                                                    </el-date-picker>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="结束时间" prop="ExpirationDate">
+                                                    <el-date-picker v-model.trim="editForm.ExpirationDate"
+                                                                    :disabled="editExpirationDate?true:false"
+                                                                    type="month"
+                                                                    value-format="yyyy-MM-dd"
+                                                                    placeholder="选择日期时间">
+                                                    </el-date-picker>
+                                                </el-form-item>
+                                                <el-checkbox class="date-now" v-model.trim="editExpirationDate">至今</el-checkbox>
+                                            </div>
+                                            <div class="form-item form-item-full">
+                                                <el-form-item label="工作介绍">
+                                                    <el-input type="textarea" :rows="4" v-model="editForm.Introduction" placeholder="请输入工作介绍"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                        </el-form>
+                            
+                                        <div class="item-active">
+                                            <button class="btn btn-info" type="reset" @@click="unRedactItem(i)">取消</button>
+                                            <button class="btn btn-primary" type="button" @@click="updateForm('editForm',i)" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-else>
+                        <div class="">
+                            <div class="title">添加工作经历</div>
+                            
+                            <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules" label-width="80px;" >
+                                <div class="form-item">
+                                    <el-form-item label="公司名称" prop="CompanyName">
+                                        <el-input v-model.trim="form.CompanyName" placeholder="请输入公司名称(必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="头衔" prop="Position">
+                                        <el-input v-model.trim="form.Position" placeholder="请输入头衔(必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="开始时间" prop="StartDate">
+                                        <el-date-picker v-model.trim="form.StartDate"
+                                                        type="month"
+                                                        value-format="yyyy-MM-dd"
+                                                        placeholder="选择日期时间">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="结束时间" prop="ExpirationDate">
+                                        <el-date-picker ref="newExpirationDate" v-model.trim="form.ExpirationDate"
+                                                        :disabled="newExpirationDate?true:false"
+                                                        type="month"
+                                                        value-format="yyyy-MM-dd"
+                                                        placeholder="选择日期时间">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                    <el-checkbox class="date-now" v-model.trim="newExpirationDate">至今</el-checkbox>
+                                </div>
+                                <div class="form-item form-item-full">
+                                    <el-form-item label="工作介绍">
+                                        <el-input type="textarea" :rows="4" v-model="form.Introduction" placeholder="请输入工作介绍"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </el-form>
+                            
+                            <div class="item-active">
+                                <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                <button class="btn btn-primary" type="button" @@click="submitForm('form')" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="appEducation" class="education" v-cloak>
+                    <div class="item-primary" v-if="!isRedact">
+                        <div class="title">
+                            教育经历
+                            <span class="item-add" @@click="redact"><i class="el-icon-circle-plus-outline"></i>添加</span>
+                        </div>
+                        <div class="education-content" v-if="educationList&&educationList.length>0">
+                            <div class="education-item primary-item" v-for="(education,i) in educationList"  :key="i">
+                                <div class="education-primary primary-item-p" v-if="!education.isRedact">
+                                    <div>
+                                        <div class="education-name">
+                                            {{education.SchoolName}}
+
+
+                                            <div class="item-primary-active">
+                                                <div class="item-del" @@click="removeEducation(education.PKID)"><i class="el-icon-delete"></i>删除</div>
+                                                <div class="item-redact" @@click="redactItem(education,i)"><i class="el-icon-edit"></i>编辑</div>
+                                            </div>
+                                        </div>
+                                        <div class="labels">
+                                            <p>
+                                                <span>{{education.MajorSubject}}</span>
+                                                <span>{{education.EducationType}}</span>
+                                                <span>{{education.StartDate.slice(0,7) | formatDate}} ~ {{education.ExpirationDate.slice(0,7) | formatDate}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="primary-item-f " v-show="education.isRedact">
+                                    <div class="">
+                                        <div class="title">编辑教育经历</div>
+                            
+                                        <el-form ref="editForm" :model="editForm" :label-position="labelPosition" :rules="rules"  >
+                                            <div class="form-item">
+                                                <el-form-item label="学校名称" prop="SchoolName">
+                                                    <el-input v-model.trim="editForm.SchoolName" placeholder="请输入学校名称(必填)"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="主修专业" prop="MajorSubject">
+                                                    <el-input v-model.trim="editForm.MajorSubject" placeholder="请输入主修专业(必填)"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                 <el-form-item label="开始时间" prop="StartDate">
+                                                    <el-date-picker v-model.trim="editForm.StartDate"
+                                                                    type="month"
+                                                                    value-format="yyyy-MM-dd"
+                                                                    placeholder="选择日期时间">
+                                                    </el-date-picker>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="结束时间" prop="ExpirationDate">
+                                                    <el-date-picker v-model.trim="editForm.ExpirationDate"
+                                                                    :disabled="editExpirationDate?true:false"
+                                                                    type="month"
+                                                                    value-format="yyyy-MM-dd"
+                                                                    placeholder="选择日期时间">
+                                                    </el-date-picker>
+                                                </el-form-item>
+                                                <el-checkbox class="date-now" v-model.trim="editExpirationDate">至今</el-checkbox>
+                                            </div>
+                                            <div class="form-item">
+                                                <el-form-item label="学历" prop="EducationType">
+                                                    <el-select v-model.trim="editForm.EducationType"  placeholder="请选择学历类型" style="width:100%" @@change="degreeChange($event,'editForm')">
+                                                        <el-option v-for="(item, i) in educationType" :label="item.label" :value="item.value" :key="i"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </div>
+                                        </el-form>
+                            
+                                        <div class="item-active">
+                                            <button class="btn btn-info" type="reset" @@click="unRedactItem(education,i)">取消</button>
+                                            <button class="btn btn-primary" type="button" @@click="updateForm('editForm',i)" :disabled="loading.saveLoading"><i v-if="loading.saveLoading" class="el-icon-loading"></i> 保存</button> 
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-else>
+                        <div class="">
+                            <div class="title">添加教育经历</div>
+                            
+                            <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules"  >
+                                <div class="form-item">
+                                    <el-form-item label="学校名称" prop="SchoolName">
+                                        <el-input v-model.trim="form.SchoolName" placeholder="请输入学校名称(必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="专业" prop="MajorSubject">
+                                        <el-input v-model.trim="form.MajorSubject" placeholder="请输入专业(必填)"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="开始时间" prop="StartDate">
+                                        <el-date-picker v-model.trim="form.StartDate"
+                                                        type="month"
+                                                        value-format="yyyy-MM-dd"
+                                                        placeholder="选择日期时间">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="结束时间" prop="ExpirationDate">
+                                        <el-date-picker v-model.trim="form.ExpirationDate"
+                                                        :disabled="newExpirationDate?true:false"
+                                                        type="month"
+                                                        value-format="yyyy-MM-dd"
+                                                        placeholder="选择日期时间">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                    <el-checkbox class="date-now" v-model.trim="newExpirationDate">至今</el-checkbox>
+                                </div>
+                                <div class="form-item">
+                                    <el-form-item label="学历" prop="EducationType">
+                                        <el-select v-model.trim="form.EducationType"  placeholder="请选择学历类型" style="width:100%" @@change="degreeChange">
+                                            <el-option v-for="(item, i) in educationType" :label="item.label" :value="item.value" :key="i"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                            </el-form>
+                            
+                            <div class="item-active">
+                                <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                <button class="btn btn-primary" type="button" @@click="submitForm('form')" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="appAvoid" class="avoid" v-cloak>
+                    <div class="item-primary" v-if="!isRedact">
+                        <div class="title">
+                            屏蔽设置
+                            <span class="item-add" @@click="redact"><i class="el-icon-circle-plus-outline"></i>添加</span>
+                        </div>
+                        <div class="avoid-content" v-if="avoidList&&avoidList.length>0">
+                            <div class="avoid-item primary-item" v-for="(avoid,i) in avoidList"  :key="i">
+                                <div class="avoid-primary primary-item-p" v-if="!avoid.isRedact">
+                                    <div>
+                                        <div class="avoid-val">
+                                            {{avoid.AvoidDomain}}
+
+                                            <div class="item-primary-active">
+                                                <div class="item-del" @@click="removeAvoid(avoid.PKID)"><i class="el-icon-delete"></i>删除</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-form" v-else>
+                        <div class="">
+                            <div class="title">添加屏蔽设置</div>
+                            
+                            <el-form ref="form" :model="form" label-position="top" :rules="rules"  >
+                                <div class="form-item form-item-full">
+                                    <el-form-item label="企业邮箱后缀" prop="AvoidDomain">
+                                        <el-input placeholder="请输入您想要屏蔽的企业邮箱后缀" v-model.trim="form.AvoidDomain">
+                                            <template slot="prepend">@@</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </div>
+                            </el-form>
+                            
+                            <div class="item-active">
+                                <button class="btn btn-info" type="reset" @@click="unRedact">取消</button>
+                                <button class="btn btn-primary" type="button" @@click="submitForm('form')" :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 提交</button> 
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="appMyresume" ref="myResumeSider" class="myresume-sider pull-right" v-cloak>
+                <div ref="myResumeSiderFixed" class="myresume-sider-fixed">
+                    <div v-if="profile.ProfileSnap">
+                            <div >
+                                <el-button v-if="!profile.ActiveStatus" @@click="bindToActive(true)" type="primary" style="width:100%;"round :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 上架简历</el-button>
+                                <el-button v-else @@click="bindToActive(false)" type="primary" style="width:100%;"round :disabled="loading.submitLoading"><i v-if="loading.submitLoading" class="el-icon-loading"></i> 下架简历</el-button>
+                            
+                            </div>
+                    </div>
+                    <div class="myresume-state">
+                        <div class="title">简历状态 <span v-if="profile.ProfileSnap">{{ profile.ActiveStatus?'已上架':'未上架'}}</span></div>
+                        <div>
+                            <div class="myresume-progress">
+                                <p  v-if="profile.ProfileSnap&&profile.ActiveStatus"><a class="link" target="_blank" href="/Resume/Snap">简历快照：雇主们目前看到的您的简历信息</a></p>
+                                <el-progress :text-inside="false" :show-text="false" :stroke-width="6" :percentage="progress"></el-progress>
+                                <p>简历完成度：{{progress}}%</p>
+                            </div>
+                        </div>
+                        @*完成简历*@
+                        <div v-if="progress == 100"  style="margin:10px 0;">
+                            @*未审核 0*@
+                            <div v-if="profile.ApproveStatus == 0">
+                                <el-button v-if="profile.ApproveStatus == 0" @@click="bindToApprove" type="primary" round style="width:100%;" :disabled="loading.submitLoading">
+                                    <i v-if="loading.submitLoading" class="el-icon-loading"></i> 
+                                    求审核
+                                </el-button>
+                            </div> 
+                            @*审核中 1*@
+                            <div v-if="profile.ApproveStatus == 1">
+                                <p>您的简历猫奇正在努力审核，请耐心等待。</p>
+                            </div>
+                            @*已审核 2*@
+                            <div v-if="profile.ApproveStatus == 2 && snapUpdate">
+                                <p>您已修改简历</p>
+                                <el-button @@click="bindToApprove" type="primary" round style="width:100%;" :disabled="loading.submitLoading">
+                                    <i v-if="loading.submitLoading" class="el-icon-loading"></i> 
+                                    重新提交审核
+                                </el-button>
+                            </div>
+                            <div v-if="profile.ApproveStatus == 2 && !snapUpdate">
+                                <p>
+                                    雇主目前将看到您的<a class="link" target="_blank" href="/Resume/Snap">简历快照</a>
+                                </p>
+                            </div>
+                            @*审核驳回 3*@
+                            <div v-if="profile.ApproveStatus == 3" >
+                                <p>
+                                    目前人才市集里活跃着{{profile.CompanyCount}}+个雇主方招聘者，您的简历暂时和他们的需求不匹配。请您稍候一周重新提交审核，谢谢！
+                                </p>
+                            </div>
+                        </div>
+                        @*未完成简历*@
+                        <div v-else  style="margin:10px 0;">
+                            <div>您尚未完成简历，填写完毕后可提交审核。</div>
+                        </div>
+                    </div>
+                
+                    <div class="myresume-erCode">
+                        <div class="clearfix">
+                            <div class="pull-left">
+                                <img src="~/Assets/images/er_wxapp.jpg" alt="Alternate Text" />  
+                            </div>
+                            <div class="pull-right">
+                                <p>扫码打开小程序<br>体验更多新功能</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+
+    
+<script src="@Html.GetCssJsUrl("/Assets/js/resume/index.js")"></script>

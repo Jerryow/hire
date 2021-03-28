@@ -1,0 +1,125 @@
+﻿
+@{
+    ViewBag.Title = "NoticeMessage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>消息</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">消息</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appNoticeMessage" >
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body card-block">
+                        <div class="row">
+                            <div class="col col-12 col-md-3">系统</div>
+                            <div class="col col-12 col-md-6">标题标题标题标题标题标题标题</div>
+                            <div class="col col-12 col-md-3">2019-11-01</div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col col-12 col-md-3">系统</div>
+                            <div class="col col-12 col-md-6">标题标题标题标题标题标题标题</div>
+                            <div class="col col-12 col-md-3">2019-11-01</div>
+                        </div>
+
+                        <div class="folding">
+                            <div class="folding-item">
+                                <div class="tab clearfix">· 我是招聘方，为什么我要用猫奇人才市集？<i class="pull-right"><img src="../../static/images/arrows.png" alt=""></i></div>
+                                <div class="tabpanel">
+                                    <div>
+                                        <P>猫奇人才市集是一种高效与简单的招聘工具，用来招募市场上的顶尖人才。
+                                                不同于以往的招聘网站所提供的候选人水平参差不齐，猫奇将会在各垂直行业中，通过AI人工智能筛选工具和资深的行业顾问，对申请人的职业背景和求职动机进行严格筛选。我们通常每收到100份申请只会挑选其中5人在人才市集上进行展示。由此，猫奇展示给您的是当前职场中的顶尖求职者，且这些求职者都是积极在寻找外部工作机会。这将为您节约大量的时间和精力</P>
+
+                                    </div>    
+                                </div>
+                            </div>
+                            <div class="folding-item">
+                                <div class="tab clearfix">· 猫奇人才市集提供哪些领域的候选人？<i class="pull-right"><img src="../../static/images/arrows.png" alt=""></i></div>
+                                <div class="tabpanel">
+                                    <div>
+                                        <P>猫奇人才市集提供多个领域的优质的候选人，包括财务、人事、法务、金融、消费零售、科技等细分领域。</P>
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    
+.folding .folding-item .tab {
+	font-size: 18px;
+	font-weight: 500;
+	color: #333;
+	border-bottom: 1px solid #efefef;
+	padding: 30px 20px 30px 0;
+	cursor: pointer
+}
+
+.folding .folding-item .tabpanel {
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
+	font-size: 14px;
+	font-weight: 400;
+	color: #666;
+	line-height: 33px;
+	transition: .3s ease-in-out
+}
+
+.folding .folding-item .tabpanel>div {
+	overflow: hidden;
+	padding: 0 30px;
+	border-bottom: 1px solid #efefef
+}
+
+.folding .folding-item .tabpanel p {
+	margin: 30px 0
+}
+
+.folding .folding-item i {
+	transition: .3s ease-in-out
+}
+
+.folding .folding-item i img {
+	width: 16px
+}
+
+.folding .folding-item.unfold .tabpanel {
+	opacity: 1;
+	height: 20px
+}
+
+.folding .folding-item.unfold i {
+	transform: rotate(-180deg)
+}
+</style>
+

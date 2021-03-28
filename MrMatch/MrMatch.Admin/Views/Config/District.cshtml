@@ -1,0 +1,189 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "District";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-city"></i> 城市数据
+        <small>基础数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-file"></i> 基础数据</li>
+        <li class="active"><i class="fas fa-city"></i> 城市数据</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box" id="appDistrict">
+        <div class="box-header">
+            <div class="col-sm-8 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    @*<label>
+            省
+            <el-select v-model="searchSelect.selectProvince" filterable @@change="getChangeCity">
+                <el-option value="0">无</el-option>
+                <el-option v-for="item in searchSelect.provinceSel" :label="item.Name" :value="item.ID"></el-option>
+            </el-select>
+            <button class="btn btn-primary btn-sm" @@click="searchSel">查所有省</button>
+        </label>*@
+                    @*<label>
+            市
+            <el-select v-model="searchSelect.selectCity" filterable>
+                <el-option v-for="item in searchSelect.citySel" :label="item.Name" :value="item.ID"></el-option>
+            </el-select>
+            <button class="btn btn-default btn-sm" @@click="searchSelAllCity">查该省所有市</button>
+        </label>*@
+                    <el-button @@click="add('form','add')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                    <el-button @@click="setCache()" type="success" size="small"><i class="fas fa-plus"></i>存入缓存</el-button>
+                </div>
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+
+        <div class="box-body">
+            <!-- DB : Cfg_CountryInfo -->
+            <template>
+                <el-table :data="districtList"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="50px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="CountryName"
+                                     label="所属国家"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="DistrictName"
+                                     label="城市"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ParentName"
+                                     label="上级城市"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="OrderNum"
+                                     label="排序"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="OnShow"
+                                     label="是否显示"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.OnShow)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.OnShow | onShow}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="HotCity"
+                                     label="是否热门"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.HotCity)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.HotCity | onShow}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作"
+                                     width="100px">
+                        <template slot-scope="scope">
+                            <el-button @@click="updateFill(scope.row.PKID,'update')" type="text" size="medium">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div><!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" onclick="javascript: goto(1);"><i class="fa fa-refresh"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+        <el-dialog :title="btnShow.title" :visible.sync="dialogVisible" :before-close="closeModal" :close-on-press-escape="diaClose" :close-on-click-modal="diaClose">
+            <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules" label-width="80px;">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="所属国家*" prop="CountryID">
+                            <el-select v-model="form.CountryID" placeholder="请选择所属国家" style="width:100%">
+                                <el-option v-for="item in countries" :label="item.CountryName" :value="item.PKID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="城市名*" prop="DistrictName">
+                            <el-input v-model="form.DistrictName" placeholder="请输入城市名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="上级城市*" prop="ParentID">
+                            <el-select v-model="form.ParentID" filterable placeholder="请选择上级城市" style="width:100%">
+                                <el-option v-for="item in parentList" :label="item.DistrictName" :value="item.PKID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="排序*" prop="OrderNum">
+                            <el-input v-model="form.OrderNum" placeholder="请输入排序(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否显示*">
+                            <el-switch v-model="form.OnShow"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="是否热门*">
+                            <el-switch v-model="form.HotCity"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitForm('form')" v-if="btnShow.addShow">新增</el-button>
+                <el-button type="primary" @@click="updateForm('form')" v-if="btnShow.updateShow">修改</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+
+<script src="@Html.GetCssJsUrl("/Js/config/District.js")">
+</script>
+

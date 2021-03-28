@@ -1,0 +1,229 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Item";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>人才搜索</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>拍卖</li>
+                            <li class="active">人才搜索</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appCandidateItem" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col col-md-9">
+
+                <div class="card" v-if="!contract">
+                    <div class="card-body bg-aqua">
+                        <i class="fa  fa-info-circle"></i> {{contractHelp}}
+                    </div>
+                </div>
+
+                <div class="card candidate-card ">
+                    <div class="card-header">
+                        @*<strong class="card-title">@(isSignContract ? profile.RealName : profile.RealName.Substring(0, 1)) @(profile.Gender == 1 ? "先生" : "女士")</strong>*@
+                        @*<strong class="card-title" v-if="headerText mr-15">@(WorkExperienceList.Count > 0 ? WorkExperienceList[0].Position : "")</strong>*@
+                        <strong class="card-title">
+                            {{contract&&profile.IsInvited?profile.RealName:(profile.WorkExperienceList.length>0?profile.WorkExperienceList[0].Position:"")}}
+                        </strong>
+                        <small class="color-gray ml-15">No.{{profile.ProfilePKID}}</small>
+
+                        @*计算*@
+                        <span class="badge badge-info" v-if="computePutTime(profile.LastModifiedTime)">本周发布</span>
+
+                        @*<div class="pull-right">
+                                <button class="btn btn-sm color-gray btn-follow" v-if="profile.IsCollected"><i class="fas fa-star "></i> 已收藏</button>
+
+                                <button class="btn btn-sm color-gray" v-if="!profile.IsCollected"><i class="far fa-star "></i> 收藏</button>
+                            </div>*@
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-3">
+                                <div class="avatar">
+                                    <img :src="profile.AvatarUrl" v-if="profile.AvatarUrl" />
+                                    <img src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                </div>
+                            </div>
+                            <div class="col col-9 ">
+                                <div class="col col-12"><i class="fas fa-map-marker color-gray-light"></i>当前居住：{{profile.Residence}}</div>
+                                <div class="col col-12" v-if="profile.AnnualSalary"><i class="fas fa-yen-sign color-gray-light"></i>当前年薪：{{(profile.AnnualSalary/1000).toFixed(2)}}K</div>
+                                <div class="col col-12" v-if="profile.JobIntention.AnnualSalary"><i class="fas fa-yen-sign color-gray-light"></i>期望年薪：{{(profile.JobIntention.AnnualSalary/1000).toFixed(2)}}K</div>
+                                <div class="col col-12"><i class="fas fa-user color-gray-light"></i>当前职位：{{profile.CurrentPosition}} {{profile.WorkYears}} 年</div>
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>主要学历：
+                                    <span class="padding-5"> {{profile.EducationList[0].SchoolName}},{{profile.EducationList[0].Degree}},{{profile.EducationList[0].MajorSubject}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>介绍</h4>
+                        <div class="exp-item row">
+                            <div class="col col-12">
+                                <div style="width:24px; float:left; display:block" v-if="contract"><i class="fas fa-quote-left color-gray-light"></i> </div>
+                                <div style="width:calc(100% - 24px); float:left;display:block;" v-if="contract" v-html="profile.Introduction">
+                                </div>
+
+                                <div style="width:100%; margin:10px 0;" v-if="!contract">
+                                    <div style=" background:#ddd; height:20px; border-radius:10px; margin:15px 0; width:30%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:80%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:90%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:50%;"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>工作经历</h4>
+
+                        <div v-if="contract">
+                            <div class="exp-item row" v-for="(item, i) in profile.WorkExperienceList">
+                                <div class="col col-8 com-title"><i class="fas fa-briefcase color-gray-light"></i> {{item.CompanyName}}</div>
+
+                                <div class="col col-4 text-right">
+                                    {{item.StartDate|dateFormat}} - {{item.ExpirationDate|monthFormat}}
+                                </div>
+                                <div class="col col-12" style="color:#000; margin-left:25px;">{{item.Position}}</div>
+                                <div class="col col-12 exp-content">
+                                    <div class="textarea-wrapper">
+                                        <pre class="textarea-content">{{item.Introduction}}</pre>
+                                        <textarea v-model="item.Introduction"
+                                                  disabled style="border: 0;width:100%;background: #fff;vertical-align: text-top; padding: 0;color: #999;resize: none;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="exp-item row" v-else>
+                            <div class="col col-12">
+                                <div style="width:100%; margin:10px 0;">
+                                    <div style=" background:#ddd; height:20px; border-radius:10px; margin:15px 0; width:30%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:80%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:90%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>教育经历</h4>
+                        <div class="exp-item " v-if="contract">
+                            <div class="row" v-for="edu in profile.EducationList">
+                                <div class="col col-5 com-title"><i class="fas fa-school color-gray-light"></i> {{edu.SchoolName}}</div>
+                                <div class="col col-4">{{edu.MajorSubject}}，{{edu.Degree}}</div>
+                                <div class="col col-3 text-right">{{edu.StartDate|dateFormat}} - {{edu.ExpirationDate|monthFormat}}</div>
+                            </div>
+                        </div>
+                        <div class="exp-item row" v-if="!contract">
+                            <div class="col col-12">
+                                <div style="width:100%; margin:10px 0;">
+                                    <div style=" background:#ddd; height:20px; border-radius:10px; margin:15px 0; width:30%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:80%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:90%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0; width:100%;"></div>
+                                    <div style=" background:#ddd; height:10px; border-radius:5px; margin:15px 0 30px 0; width:50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a class="btn btn-block btn-info text-white" :href="'/candidate/invite?code='+profile.UniCode" target="_blank">发送面试邀约</a>
+                        @*<button class="btn btn-block btn-info text-white" @@click="sendInviteLetter(profile.UserID)">发送面试邀约</button>*@
+                        <div class="text-center color-gray small mb-15 mt-15" style="text-align:center;">你还可以</div>
+                        <button class="btn btn-outline-success " @@click="exportProfile"><i class="fas fa-download"></i>下载简历</button>
+                        <button class="btn btn-outline-success pull-right" @@click="shareDialogVisible = true"><i class="fas fa-share"></i>转发简历</button>
+                    </div>
+                </div>
+
+                <div class="card calling-card">
+                    <div class="card-body ">
+                        <div class="calling-head">需要帮助？</div>
+                        <div class="calling-title">
+                            杨森华
+                            <small>客户成功经理</small>
+                        </div>
+                        <div class="calling-content">
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">联系电话：</div>
+                                <div class="calling-val">+86-13818163713</div>
+                            </div>
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">邮箱：</div>
+                                <div class="calling-val">business@mrmatch.net</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog title="转发简历?"
+               :visible.sync="shareDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="col col-md-12 form-group margin-bottom-30">
+            <label>邮箱</label>
+            <div class="input-group">
+                <input type="text" v-model="shareForm.Email" placeholder="输入同事的邮箱" class="form-control" value="">
+                <div class="input-group-addon" style="border-radius:0; border-left:0; border-right:0;"><i class="fas fa-at"></i></div>
+                <input type="text" id="Domain" name="domain" disabled="disabled" class="form-control col-sm-4" :value="domain">
+            </div>
+        </div>
+        <div class="col col-md-12 form-group margin-bottom-30">
+            <label>描述</label>
+            <div class="input-group">
+                <textarea name="Introduce" v-model="shareForm.Intruduce" rows="9" placeholder="说说您分享的原因。" class="form-control"></textarea>
+            </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @@click="shareProfile">确定</el-button>
+        </span>
+    </el-dialog>
+</div>
+<script src="~/Content/plugins/jQuery/jquery.fileDownload.min.js"></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/item.js")"></script>

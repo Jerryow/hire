@@ -1,0 +1,146 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>消息</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">消息</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appNoticeMessage" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body card-block">
+                        <div class="folding" ref="folding">
+                            <div class="folding-item" :ref="'folding'+item.PKID" v-for="item in messageList" @@click="readMark(item.PKID,item.IsRead)">
+                                <div class="tab clearfix">
+                                    <i :class="item.IsRead?'':'mark'"></i>
+                                    <div>{{item.MessageSubject}}</div>
+                                    <span class="pull-right">{{item.CreatedTime|dateFormat}}</span>
+                                </div>
+                                <div class="tabpanel">
+                                    <div>{{item.MessageContent}}</div>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <el-pagination @@current-change="currentChange"
+                           layout="prev, pager, next"
+                           :page-size="form.pageSize"
+                           :current-page="form.pageIndex"
+                           :total="form.total">
+            </el-pagination>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    
+.folding .folding-item  {
+    position:relative;
+}
+.folding .folding-item .tab {
+	font-size: 16px;
+	font-weight: 500;
+	color: #333;
+	border-bottom: 1px solid #efefef;
+	padding: 20px 20px 20px 10px;
+	cursor: pointer;
+    overflow:hidden;
+    position:relative;
+
+}
+
+.folding .folding-item .tab>div{
+    padding-right:150px;
+    padding-left:6px;
+}
+.folding .folding-item .tabpanel {
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
+	font-size: 14px;
+	font-weight: 400;
+	color: #666;
+	line-height: 33px;
+	transition: .3s ease-in-out;
+}
+
+.folding .folding-item .tabpanel>div {
+	overflow: hidden;
+	padding: 15px 30px;
+	border-bottom: 1px solid #efefef;
+    line-height:1.8;
+}
+
+.folding .folding-item .tabpanel p {
+	margin: 20px 0
+}
+
+.folding .folding-item span{
+    color:#888;
+    font-size:12px;
+    position: absolute;
+    top:24px;
+    right:20px;
+}
+.folding .folding-item i {
+    position: absolute;
+    top:28px;
+    left:-10px;
+    left:0;
+    width:4px;
+    height:8px;
+    border-radius: 3px;
+    background:red;
+    transition:.3s;
+    opacity:0;
+    padding:0;
+    margin:0;
+}
+.folding .folding-item i.mark {
+    opacity:.6;
+}
+
+
+.folding .folding-item.unfold .tabpanel {
+	opacity: 1;
+	height: 20px
+}
+
+.folding .folding-item.unfold i {
+	/*transform: rotate(-180deg)*/
+}
+</style>
+<script src="@Html.GetCssJsUrl("/Assets/Js/message/index.js")"></script>
+

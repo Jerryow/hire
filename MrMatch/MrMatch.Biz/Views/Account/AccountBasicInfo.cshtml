@@ -1,0 +1,172 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "AccountBasicInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>个人资料</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">个人资料</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appBasicInfo" v-cloak>
+    <div class="animated fadeIn">
+        <div class="card col-md-12">
+            <div class="card-header">
+                <strong>个人资料</strong>
+                <div class="float-right">
+
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col col-md-12">
+                        <h4 class=" margin-bottom-30">
+                            {{basicInfo.AccountName}}
+                            <span class="badge badge-info" v-if="basicInfo.IsAdmin">管理员</span>
+
+                        </h4>
+                        <p class="color-gray"><i class="far fa-building"></i> 所属企业：{{basicInfo.CompanyName}}</p>
+                        <p class="color-gray"><i class="far fa-envelope"></i> 邮箱：{{basicInfo.Email}}</p>
+                        <p class="color-gray"><i class="fas fa-mobile-alt"></i> 联系电话：{{basicInfo.CellPhone}}</p>
+                        <p class="color-gray"><i class="far fa-calendar-check"></i> 注册时间：{{basicInfo.CreatedTime|dateFormat}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-md-12">
+                <div class="card ">
+                    <div class="card-header">
+                        修改资料
+                    </div>
+                    <div class="card-body col-md-12 ">
+                        <form id="AccountInfo">
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="AccountName" class=" form-control-label">设置称呼 <span :class="validate.AccountName.isPass?'color-red':''">*</span></label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" id="AccountName" name="AccountName" placeholder="如：Alex" class="form-control " v-model="form.AccountName">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="Position" class=" form-control-label">设置职位 <span :class="validate.Position.isPass?'color-red':''">*</span></label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" id="Position" name="Position" placeholder="如：HR Manager" class="form-control " v-model="form.Position">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">联系电话</label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" id="CellPhone" name="CellPhone" placeholder="" class="form-control disabled" disabled="disabled" v-model="basicInfo.CellPhone">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">头像</label></div>
+                                <div class="col  col-md-10">
+                                    <el-upload class="avatar-uploader"
+                                               action="/api"
+                                               :limit="1"
+                                               :before-upload="beforeAvatarUploadA">
+                                        <img :src="basicInfo.AvatarUrl" class="avatar" v-if="!preUpload.avartarShow">
+                                        <img :src="imgT+preUpload.avartar" class="avatar" v-else>
+                                    </el-upload>
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">微信号</label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" placeholder="" class="form-control disabled" v-model="form.WechatAccount">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">微信二维码</label></div>
+                                <div class="col  col-md-10">
+                                    <el-upload class="avatar-uploader"
+                                               action="https://jsonplaceholder.typicode.com/posts/"
+                                               :limit="1"
+                                               :before-upload="beforeAvatarUploadW">
+                                        <img :src="basicInfo.WechatContactUrl" class="avatar" v-if="!preUpload.wechatShow">
+                                        <img :src="imgT+preUpload.wechat" class="avatar" v-else>
+                                    </el-upload>
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">领英链接</label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" placeholder="" class="form-control disabled" v-model="form.LinkinUrl">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">专注领域</label></div>
+                                <div class="col  col-md-10">
+                                    <input type="text" placeholder="" class="form-control disabled" v-model="form.FocusArea">
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="CellPhone" class=" form-control-label">个人介绍</label></div>
+                                <div class="col  col-md-10">
+                                    <el-input type="textarea"
+                                              :rows="8"
+                                              placeholder="请输入个人介绍"
+                                              v-model="form.Introduction">
+                                    </el-input>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-info " :disabled="submitLoading" id="FormSubmitInfo" @@click="submitForm"><i class="far fa-dot-circle"></i> 提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/basicinfo.js")"></script>
+<style>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
+    }
+</style>

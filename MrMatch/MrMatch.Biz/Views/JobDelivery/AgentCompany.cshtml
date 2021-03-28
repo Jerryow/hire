@@ -1,0 +1,135 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "AgentCompany";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>新增/编辑企业信息</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>Job Board</li>
+                            <li class="active">新增/编辑企业信息</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="appAgentCompany" v-cloak>
+    <div class="animated fadeIn">
+
+        <div class="row">
+            <div class="col-md-12">
+                <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left" class="publish-form">
+                    <div class="card">
+                        <div class="card-body ">
+                            <div class="row margin-bottom-10 margin-top-10 ">
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="公司全称" prop="CompanyName" >
+                                        <el-input v-model="form.CompanyName" placeholder="请输入公司全称"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10" >
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="对外显示名称" prop="ShortName" >
+                                        <el-input v-model="form.ShortName"  placeholder="请输入对外显示名称"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10" >
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="所在城市" prop="City" >
+                                        <el-input v-model="form.City"  placeholder="请输入所在城市"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10" >
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="企业类型" prop="CompnayType" >
+                                        <el-select v-model="form.CompnayType" placeholder="请选择企业类型"  style="width:100%;">
+                                            <el-option v-for="item in [{'Name':'aa','ID':1}]"
+                                                       :key="item.ID"
+                                                       :label="item.Name"
+                                                       :value="item.ID">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10" >
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="企业规模" prop="CompnayType" >
+                                        <el-select v-model="form.CompnayType" placeholder="请选择企业规模"  style="width:100%;">
+                                            <el-option v-for="item in [{'Name':'aa','ID':1}]"
+                                                       :key="item.ID"
+                                                       :label="item.Name"
+                                                       :value="item.ID">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="公司简介">
+                                        <el-input
+                                          type="textarea"
+                                          :autosize="{ minRows: 6, maxRows: 10}"
+                                          resize="none"
+                                          placeholder="请输入内容"
+                                          v-model="form.Summary"
+                                          ></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="补充说明">
+                                        <el-input
+                                          type="textarea"
+                                          :autosize="{ minRows: 6, maxRows: 10}"
+                                          resize="none"
+                                          placeholder="请输入内容"
+                                          v-model="form.Introduce"
+                                          ></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                </el-form>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body card-block">
+                        <button type="button" class="btn btn-info" @@click="submitForm('form')"> 保存企业信息</button>
+                        <button type="button" class="btn btn-outline-info" @@click="submitCancel"> 取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- .animated -->
+</div>
+
+
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/jobDelivery/agentCompany.js")" ></script>

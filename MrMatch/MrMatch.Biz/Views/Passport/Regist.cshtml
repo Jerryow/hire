@@ -1,0 +1,147 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Mr Match 猫奇</title>
+    <meta name="description" content="Mr Match 猫奇先生">
+
+    <!--[if It IE 9]>
+        <script>
+        document.getElementsByTagName('body')[0].style.display = 'none'
+        window.onload = function(){
+          document.getElementsByTagName('body')[0].innerHTML = '<div style="text-align:center;margin-top:50px;font-size:20px;"><img src="/Assets/images/ie.png" /><p>你的IE浏览器版本过低，请升级至IE10以上版本或更换浏览器</p></div>'
+          document.getElementsByTagName('body')[0].style.display = 'block'
+        }
+    </script>
+    <![endif]-->
+
+    @*<script src="~/Scripts/browser.min.js"></script>
+    <script src="~/Scripts/browser-polyfill.min.js"></script>*@
+    
+    <script src="/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="/content/assets/js/popper.min.js"></script>
+    <link href="~/Content/ElementUI/element-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <script src="~/Scripts/axios.min.js"></script>
+    <link href="@Html.GetCssJsUrl("/Assets/css/common.css")" rel="stylesheet" />
+    <link href="@Html.GetCssJsUrl("/Assets/css/pages/login.css")" rel="stylesheet" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .unReceiveBtn,
+        .unReceiveBtn:hover {
+            background: #86e3b0 !important;
+            border-color: #86e3b0 !important;
+            border-radius: 20px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sufee-login d-flex align-content-center flex-wrap" id="appRegist" v-cloak>
+        <div class="login  main-fluid">
+            <div class="main-fluid header">
+                <div class="clearfix main">
+                    <div class="pull-left">
+                        <div class="logo"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="login-bg regist-bg ">
+                <div class="login-card login-box">
+                    <div class="card-box">
+                        <div>
+                            <img class="logo" src="~/Assets/images/login_logo.png" />
+                        </div>
+                        <div class="tagline">
+                            <div>精挑细选的人才市场</div>
+                        </div>
+                        <div class="hint"><i class="el-icon-warning-outline" v-if="hint&&hint.length>0"></i>&nbsp;{{hint}}</div>
+                        <div>
+                            <div class="input-box input-line">
+                                <div style="padding-left: 60px;">
+                                    <div class="input-left">
+                                        <div>+86</div>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <input type="text" name="username" id="username" placeholder="请输入手机号码" v-model="registArgs.CellPhone" style="width: 400px;"><!---->
+                                    </div><!---->
+                                </div>
+                            </div>
+                            <div class="input-box input-line">
+                                <div style="padding-right: 150px;">
+                                    <!---->
+                                    <div style="display: inline-block;">
+                                        <input type="text" name="verifycode" id="verifycode" v-model="registArgs.PhoneVerifyCode" placeholder="验证码" data-name="verifycode" style="width: 330px;"><!---->
+                                    </div><div class="input-right">
+                                        <div ref="setCode" :class="'btn text-theme btn-code '+ (loading.sendLoading?'disabled':'')" @@click="getImage">{{isSendCode?timer+'s':'获取短信验证码'}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-box input-line">
+                                <div>
+                                    <div style="display: inline-block;width:100%">
+                                        <input style="width:100%" type="text" name="email" id="email" placeholder="请输入企业邮箱" v-model="registArgs.Email"><!---->
+                                    </div><!---->
+                                </div>
+                            </div>
+                            <div class="input-box input-line">
+                                <div style="padding-right: 150px;">
+                                    <!---->
+                                    <div style="display: inline-block;">
+                                        <input type="text" name="emailcode" id="emailcode" v-model="registArgs.EmailVerifyCode" placeholder="验证码" @@keyup.enter="registSubmit" style="width: 330px;"><!---->
+                                    </div><div class="input-right">
+                                        <div ref="setEmailCode" :class="'btn text-theme btn-code '+ (loading.sendEmailLoading?'disabled':'')" @@click="getEmailVerifyCode">{{isSendEmailCode?EmailTimer+'s':'获取邮箱验证码'}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="f14 text-gray">
+                            <div style="display: inline-block;    vertical-align: middle;">
+                                <div class="slide-checkbox">
+                                    <input type="checkbox" name="agreement" id="agreement" value="agreement" @@change="checkboxClickAgreement">
+                                    <label for="agreement">
+                                        <div class="slide-checkbox-i"></div>
+                                        同意
+                                        <a class="color-theme pointer" href="https://www.mrmatch.net/talent_protocol.html" target="_black">猫奇使用协议</a>、
+                                        <a class="color-theme pointer" href="https://www.mrmatch.net/privacy_policy.html" target="_black">隐私政策</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin: 20px 0px 10px;">
+                            <button class="btn bg-theme btn-login" @@click="registSubmit" :disabled="loading.registLoading"><i v-if="loading.registLoading" class="el-icon-loading"></i>注册</button>
+
+                        </div>
+                        <div class="cf">
+                            <div class="fr pointer f14 text-theme" @@click="unReceiveCode">收不到验证码</div>
+                        </div>
+                        <div class="cf">
+                            <div class="fr pointer f14 text-gray">已有账号,<a href="/passport/login" class="text-theme">去登录</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
+<link href="@Html.GetCssJsUrl("/Scripts/img_ver/style.css")" rel="stylesheet" />
+<script src="@Html.GetCssJsUrl("/Scripts/Config/ChkUtil.js")" ></script>
+<script src="@Html.GetCssJsUrl("/Scripts/img_ver/img_ver.js")" ></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/config.js")" ></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/passport/regist.js")" ></script>

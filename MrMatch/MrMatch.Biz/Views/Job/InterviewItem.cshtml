@@ -1,0 +1,276 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "InterviewItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>流程管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>消息</li>
+                            <li class="active">流程管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appInterviewItem" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col col-md-12 ">
+                <div class="card candidate-card " v-if="profile">
+                    <div class="card-header">
+                        <strong class="card-title">{{profile.RealName}} {{profile.Gender == 1 ? "先生" : "女士"}}</strong>
+                        <small class="color-gray ml-15">No.{{profile.ProfilePKID}}</small>
+
+                        <span class="badge badge-info" v-if="computePutTime(profile.LastModifiedTime)">本周发布</span>
+
+                        <div class="pull-right">
+
+                        </div>
+                        <div class="pull-right mr-15"><button class="btn btn-outline-success btn-sm" @@click="exportProfile" :disabled="loading.submitLoading"><i class="fas fa-download"></i>下载简历</button></div>
+                        <div :class="'pull-right text-'+interview.InterviewStatus+ ' mr-15'">{{interview.InterviewStatus|status}}</div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-md-2">
+                                <div class="avatar">
+                                    <img v-if="profile.AvatarUrl" :src="profile.AvatarUrl" style="margin:0 auto;" />
+                                    <img v-else src="~/Content/assets/images/avatar/avatar2.png" style="margin:0 auto;" />
+                                </div>
+                            </div>
+                            <div class="col col-9 ">
+                                <div class="col col-12"><i class="fas fa-map-marker color-gray-light"></i>当前居住：{{profile.Residence}}</div>
+                                <div class="col col-12" v-if="profile.AnnualSalary"><i class="fas fa-yen-sign color-gray-light"></i>当前年薪：{{(profile.AnnualSalary/1000).toFixed(2)}}K</div>
+                                <div class="col col-12" v-if="profile.JobIntention.AnnualSalary"><i class="fas fa-yen-sign color-gray-light"></i>期望年薪：{{(profile.JobIntention.AnnualSalary/1000).toFixed(2)}}K </div>
+
+                                <div class="col col-12"><i class="fas fa-user color-gray-light"></i>当前职位：{{profile.CurrentPosition}} {{profile.WorkYears}}年</div>
+                                <div class="col col-12 school-block margin-bottom-15">
+                                    <i class="fas fa-school color-gray-light"></i>主要学历：
+                                    <span class="padding-5"> {{profile.EducationList[0].SchoolName}}，{{profile.EducationList[0].Degree}}，{{profile.EducationList[0].MajorSubject}}</span>
+                                </div>
+                                <div class="col col-md-12">
+                                    <div class="text-bold text-blue font-2xl"><i class="fas fa-mobile-alt"></i> {{phone}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <div class="custom-tab ">
+
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link active show mr-15" id="interview-form-tab" role="tab" aria-selected="true" aria-controls="interview-form" href="#interview-form" data-toggle="tab"><h4>历史</h4></a>
+                                <a class="nav-item nav-link mr-15" id="interview-comment-open-tab" role="tab" aria-selected="false" aria-controls="interview-comment-open" href="#interview-comment-open" data-toggle="tab"><h4>评价</h4></a>
+                                <a class="nav-item nav-link mr-15" id="interview-comment-remark-tab" role="tab" aria-selected="false" aria-controls="interview-comment-remark" href="#interview-comment-remark" data-toggle="tab"><h4>备注</h4></a>
+                                <a class="nav-item nav-link" id="interview-invite-tab" role="tab" aria-selected="false" aria-controls="interview-invite" href="#interview-invite" data-toggle="tab"><h4>邀约</h4></a>
+                            </div>
+
+                            <div class="tab-content pl-3 pt-2" id="nav-tabContent">
+                                <div class="tab-pane fade active show" id="interview-form" role="tabpanel" aria-labelledby="interview-form-tab">
+
+                                    <div class="col col-md-6 margin-bottom-15 " style="padding-top:20px;">
+                                        <h4>历史足迹</h4>
+
+                                        <div class="table-stats order-table ov-h">
+                                            <table class="table ">
+                                                <thead>
+                                                    <tr>
+                                                        <th>日期</th>
+                                                        @*<th>操作</th>*@
+                                                        <th>状态</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr v-for="(item,i) in response">
+                                                        <td>
+                                                            {{item.CreatedTime|dateFormat}}
+                                                        </td>
+                                                        @*<td>@(item.RequestType == 10 ? "沟通邀约" : "面试录用")</td>*@
+                                                        <td>
+                                                            <label>{{item.ResponseValue|status}}</label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col col-md-6 margin-bottom-15" style="padding-top:20px;">
+                                        <h4>操作</h4>
+                                        <div class="form-group" id="BtnStatus">
+                                            <div v-if="">
+                                                <button :class="'btn mr-15 '+ (interview.InterviewStatus==200||interview.InterviewStatus==210||interview.InterviewStatus==220?'btn-info':'btn-default')"
+                                                        :disabled="interview.InterviewStatus==200||interview.InterviewStatus==210||interview.InterviewStatus==220?false:true"
+                                                        @@click="operations(110)">
+                                                    回绝Ta
+                                                </button>
+                                                <button :class="'btn mr-15 '+ (interview.InterviewStatus==200?'btn-info':'btn-default')"
+                                                        :disabled="interview.InterviewStatus==200?false:true"
+                                                        @@click="operations(210)">
+                                                    已沟通
+                                                </button>
+                                                <button :class="'btn mr-15 '+ (interview.InterviewStatus==210?'btn-info':'btn-default')"
+                                                        :disabled="interview.InterviewStatus==210?false:true"
+                                                        @@click="operations(220)">
+                                                    已面试
+                                                </button>
+                                                <button :class="'btn mr-15 '+ (interview.InterviewStatus==220?'btn-info':'btn-default')"
+                                                        :disabled="interview.InterviewStatus==220?false:true"
+                                                        @@click="operations(230)">
+                                                    已录用
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                        <div class="bg-gray-light color-gray" style="border-radius:5px;  padding:10px;">
+                                            <pre>说明：
+        为了更加方便您管理所有候选人的流程进展，有劳您第一时间点击下列按钮做操作：
+	   【回绝Ta】 当您和候选人电话沟通后或是面试后，您觉得候选人不合适贵司，请点击该按钮。
+	   【已沟通】 当您和候选人电话沟通后，请点击此按钮。
+	   【已面试】 当您和候选人面试后，请点击此按钮。
+       &nbsp;&nbsp;&nbsp;&nbsp;【已录用】 当您和候选人双方签署Offer Letter，确认录用后，请点击此按钮。
+</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="interview-comment-open" role="tabpanel" aria-labelledby="interview-comment-open-tab">
+
+                                    <div class="col col-md-12 comment-block" v-for="(item,i) in comment">
+                                        <div class="col col-md-2 text-center">
+                                            <div class="direct-chat-img" style="margin:0 auto; float:unset;">
+                                                <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                            </div>
+                                            {{item.AccountName}}
+                                        </div>
+                                        <div class="col col-md-10">
+                                            {{item.CreatedTime|dateFormat}}
+                                            <pre>{{item.Comment}} </pre>
+                                        </div>
+                                    </div>
+
+                                    <form style="margin-top:30px;">
+                                        <div class="form-group">
+                                            <textarea class="form-control margin-bottom-15" rows="8" v-model="commentOpen" placeholder="此处您对候选人所做出的评价，对团队成员均可见。可记录，您与候选人接触沟通后的感想、评价等。"></textarea>
+                                            <div class="text-right">
+                                                <button type="button" class="btn btn-info" @@click="submitComment(1)"><i class="far fa-dot-circle"></i> 提交</button>
+                                                <button type="reset" class="btn btn-outline-info" @@click="resetCom(1)"><i class="fas fa-ban"></i> 重置</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="tab-pane fade" id="interview-comment-remark" role="tabpanel" aria-labelledby="interview-comment-remark-tab">
+
+
+                                    <div class="col col-md-12 comment-block" v-for="(item,i) in commentRemark">
+                                        <div class="col col-md-2 text-center">
+                                            <div class="direct-chat-img" style="margin:0 auto; float:unset;">
+                                                <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                            </div>
+                                            {{accountName}}
+                                        </div>
+                                        <div class="col col-md-10">
+                                            {{item.CreatedTime|dateFormat}}
+                                            <pre>{{item.Comment}} </pre>
+                                        </div>
+                                    </div>
+                                    <form style="margin-top:30px;">
+                                        <div class="form-group">
+                                            <textarea class="form-control margin-bottom-15" rows="8" v-model="commentUnOpen" placeholder="此处您所做的备注，仅您自己可见。可记录，你与候选人的沟通隐私记录、约见时间。"></textarea>
+                                            <div class="text-right">
+                                                <button type="button" class="btn btn-info" @@click="submitComment(0)"><i class="far fa-dot-circle"></i> 提交</button>
+                                                <button type="reset" class="btn btn-outline-info" @@click="resetCom(0)"><i class="fas fa-ban"></i> 重置</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+
+                                <div class="tab-pane fade" id="interview-invite" role="tabpanel" aria-labelledby="interview-invite-tab">
+
+                                    <div class="col col-md-12 comment-block">
+                                        <div class="col col-md-2 text-center">
+                                            <div class="direct-chat-img" style="margin:0 auto; float:unset;">
+                                                <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                            </div>
+                                            {{accountName}}
+                                        </div>
+                                        <div class="col col-md-10">
+                                            {{invite.CreatedTime|dateFormat}}
+                                            <pre>{{invite.InviteLetter}} </pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>介绍</h4>
+                        <div class="exp-item row">
+                            <div class="col col-12">
+                                <div style="width:24px; float:left; display:block"><i class="fas fa-quote-left color-gray-light"></i> </div>
+                                <div style="width:calc(100% - 24px); float:left;display:block;" v-html="profile.Introduction">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>工作经历</h4>
+
+                        <div class="exp-item row" v-for="(item, i) in profile.WorkExperienceList">
+                            <div class="col col-6 com-title"><i class="fas fa-briefcase color-gray-light"></i> {{item.CompanyName}}</div>
+                            <div class="col col-3">{{item.Position}}</div>
+                            <div class="col col-3">
+                                {{item.StartDate|dateFormat1}} - {{item.ExpirationDate|monthFormat}}
+                            </div>
+                            <div class="col col-12 exp-content" v-html="item.Introduction"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card candidate-card">
+                    <div class="card-body">
+                        <h4>教育经历</h4>
+
+                        <div class="exp-item row" v-for="(item, i) in profile.EducationList">
+                            <div class="col col-6 com-title"><i class="fas fa-school color-gray-light"></i> {{item.SchoolName}}</div>
+                            <div class="col col-3">{{item.MajorSubject}}，{{item.Degree}}</div>
+                            <div class="col col-3">{{item.StartDate|dateFormat1}} - {{item.ExpirationDate|monthFormat}}</div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script src="/Content/plugins/jQuery/jquery.fileDownload.min.js"></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/job/interviewitem.js")"></script>

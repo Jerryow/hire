@@ -1,0 +1,275 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "JobManage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>职位管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>Job Board</li>
+                            <li class="active">职位管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appJobManage" v-cloak>
+    <div class="animated fadeIn">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <el-tabs v-model="activeName" type="card" @@tab-click="handleClick">
+                            <el-tab-pane label="上架的职位" name="activity">
+                                @*上架的职位*@
+
+                                <el-form :model="form" :rules="rules" label-width="80px" label-position="left" class="publish-form" onsubmit="return false;">
+                                    <div class=" row" style="margin:20px 0;">
+                                        <div class="col col-12 col-md-4">
+                                            <el-form-item label="职位编号" >
+                                                <el-input v-model="form.jobCode" placeholder="请输入职位编号" ></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12 col-md-4">
+                                            <el-form-item label="职位名称">
+                                                <el-input v-model="form.jobName" placeholder="请输入职位名称"></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12 col-md-3">
+                                            <button type="button" class="btn btn-info" @@click="getActivityJobList"> 搜索</button>
+                                        </div>
+                                    </div>
+                                </el-form>
+                                <div class="row margin-bottom-10  ">
+                                    <div class="col col-12 "> 
+                                        <el-table
+                                            v-loading="loading"
+                                            :data="list"
+                                            border
+                                            empty-text="未找到相关企业"
+                                            style="width: 100%">
+                                            <el-table-column
+                                                label="职位编号">
+                                                <template slot-scope="scope">
+                                                <span :title="scope.row.UniCode">{{ scope.row.PKID }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="职位名称">
+                                                <template slot-scope="scope">
+                                                    @*<span class="overflow-multiLine" :title="scope.row.JobName">{{ scope.row.JobName }}</span>*@
+                                                    <a :href="'/jobdelivery/jobDetails?id='+scope.row.PKID" target="_blank" style="color:#409EFF" class="overflow-multiLine" :title="scope.row.JobName">{{ scope.row.JobName  }}</a>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="公司全称">
+                                                <template slot-scope="scope">
+                                                    <span class="overflow-multiLine" :title="scope.row.JobCompanyName">{{ scope.row.JobCompanyName }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="对外显示名称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.JobCompanyShortName">{{ scope.row.JobCompanyShortName }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="投递简历">
+                                                <template slot-scope="scope">
+                                                    @*<span class="overflow-multiLine" :title="scope.row.ApplyCount">{{ scope.row.ApplyCount }}</span>*@
+                                                    <a :href="'/jobdelivery/jobDetails?id='+scope.row.PKID" style="color:#409EFF" target="_blank" class="overflow-multiLine" :title="scope.row.ApplyCount">{{ scope.row.ApplyCount  }}</a>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="最新编辑时间">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.LastModifiedTime">{{ scope.row.LastModifiedTime | DateFilter }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button  type="text" size="small" @@click="editJob(scope.row)">编辑</el-button>
+                                                    <el-button  type="text" size="small" @@click="updateJobActivityStatus(scope.row, 0)">下架</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="下架的职位" name="unactivity">
+                                @*下架的职位*@
+                            
+                                <el-form :model="form" :rules="rules" label-width="80px" label-position="left" class="publish-form" onsubmit="return false;">
+                                    <div class=" row" style="margin:20px 0;">
+                                        <div class="col col-12 col-md-4">
+                                            <el-form-item label="职位编号" >
+                                                <el-input v-model="form.jobCode" placeholder="请输入职位编号" ></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12 col-md-4">
+                                            <el-form-item label="职位名称">
+                                                <el-input v-model="form.jobName" placeholder="请输入职位名称"></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12 col-md-3">
+                                            <button type="button" class="btn btn-info" @@click="getActivityJobList"> 搜索</button>
+                                        </div>
+                                    </div>
+                                </el-form>
+                                <div class="row margin-bottom-10  ">
+                                    <div class="col col-12 "> 
+                                        <el-table
+                                            v-loading="loading"
+                                            :data="list"
+                                            border
+                                            empty-text="未找到相关企业"
+                                            style="width: 100%">
+                                            <el-table-column
+                                                label="职位编号">
+                                                <template slot-scope="scope">
+                                                <span :title="scope.row.UniCode">{{ scope.row.PKID }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="职位名称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.JobName">{{ scope.row.JobName }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="公司全称">
+                                                <template slot-scope="scope">
+                                                <a :href="'/jobdelivery/jobDetails?id='+scope.row.PKID" target="_blank" class="overflow-multiLine" :title="scope.row.JobCompanyName">{{ scope.row.JobCompanyName  }}</a>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="对外显示名称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.JobCompanyShortName">{{ scope.row.JobCompanyShortName  }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="投递简历">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.ApplyCount">{{ scope.row.ApplyCount }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="最新编辑时间">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.LastModifiedTime">{{ scope.row.LastModifiedTime | DateFilter }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button  type="text" size="small" @@click="editJob(scope.row)">编辑</el-button>
+                                                    <el-button  type="text" size="small" @@click="updateJobActivityStatus(scope.row, 1)">上架</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="草稿箱" name="draft">
+                                @*草稿箱*@
+                            
+                                <el-form :model="form" :rules="rules" label-width="80px" label-position="left" class="publish-form" onsubmit="return false;">
+                                    <div class=" row" style="margin:20px 0;">
+                                        <div class="col col-12 col-md-4">
+                                            <el-form-item label="职位名称">
+                                                <el-input v-model="form.jobName" placeholder="请输入职位名称"></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12 col-md-3">
+                                            <button type="button" class="btn btn-info" @@click="getDraftJobList "> 搜索</button>
+                                        </div>
+                                    </div>
+                                </el-form>
+                                <div class="row margin-bottom-10  ">
+                                    <div class="col col-12 "> 
+                                        <el-table
+                                            v-loading="loading"
+                                            :data="list"
+                                            border
+                                            empty-text="未找到相关企业"
+                                            style="width: 100%">
+                                            <el-table-column
+                                                label="职位名称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine"  :title="scope.row.JobName">{{ scope.row.JobName|NameFilter  }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="公司全称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine"  :title="scope.row.JobCompanyName">{{ scope.row.JobCompanyName|NameFilter  }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="对外显示名称">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine"  :title="scope.row.JobCompanyShortName">{{ scope.row.JobCompanyShortName|NameFilter  }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="最新编辑时间">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.LastModifiedTime">{{ scope.row.LastModifiedTime | DateFilter }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button  type="text" size="small" @@click="editJob(scope.row,'draft')">编辑</el-button>
+                                                    <el-button  type="text" size="small" @@click="delDraftJob(scope.row)">删除</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
+                                </div>
+                            
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <div class="card-body text-center">
+                         <el-pagination
+                          :total="pagenation.total"
+                          @@current-change="currentChange"
+                          layout="prev, pager, next">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- .animated -->
+    
+</div>
+
+<style>
+    .overflow-multiLine{
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+</style>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/jobDelivery/jobManage.js")"></script>

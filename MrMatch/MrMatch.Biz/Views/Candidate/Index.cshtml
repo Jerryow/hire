@@ -1,0 +1,305 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>人才搜索</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>人才市集Marketplace</li>
+                            <li class="active">人才搜索</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="appCandidate" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="pull-left col-md-8 candidate-list" id="candidate-list" v-loading="loading.searchResultLoading">
+                <div class="card candidate-card" v-for="(item, i) in profile" v-if="profile">
+                    <div class="card-header">
+                        <strong class="card-title"> {{(contract&&item.IsInvited)?item.RealName:item.WorkExperienceList[0].Position}} </strong>
+                        <small class="color-gray">No.{{item.ProfilePKID}}</small>
+                        <span class="badge badge-info" v-if="computePutTime(item.LastModifiedTime)">本周发布</span>
+                        <div class="pull-right">
+                            <button class="btn btn-sm color-gray btn-follow" v-if="item.IsCollected" :data-code="profile.UniCode"><i class="fas fa-star "></i> 已收藏</button>
+                            <button class="btn btn-sm color-gray" v-else @@click="clickFollowUser(item.UserID,i)" :data-code="item.UniCode"><i class="far fa-star "></i> 收藏</button>
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.Intention.AnnualSalary">
+                            <label class="color-gray">期望年薪：</label> {{(item.Intention.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.AnnualSalary">
+                            <label class="color-gray">当前年薪：</label> {{(item.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;">
+                            <label class="color-gray">所在城市：</label> {{item.Residence}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-2">
+                                <div class="avatar text-center">
+                                    <img v-if="item.AvatarUrl" :src="item.AvatarUrl" style="margin:0 auto;" />
+                                    <img v-else src="~/Content/assets/images/avatar/avatar1.png" style="margin:0 auto;" />
+                                </div>
+                            </div>
+                            <div class="col col-10">
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>
+                                    <span class="padding-5">主要学历： {{item.EducationList[0].SchoolName}}，{{item.EducationList[0].Degree}}，{{item.EducationList[0].MajorSubject}}</span>
+                                </div>
+                                <div class="col col-12"><i class="fas fa-briefcase color-gray-light"></i> {{item.WorkExperienceList != null ? item.WorkExperienceList.length : "0"}} 职位，{{item.WorkYears}} 年</div>
+                                <div class="col col-12 no-padding">
+                                    <ul :ref="'workList'+i" class="timeline" v-if="item.WorkExperienceList">
+                                        <!-- timeline item -->
+                                        <li :class="j<2?'':'hidden'" v-for="(option, j) in item.WorkExperienceList">
+                                            <!-- timeline icon -->
+                                            <i class="far fa-circle"></i>
+                                            <div class="timeline-item">
+                                                <span class="text-black">{{option.Position}}</span>
+                                                <span>{{contract?option.CompanyName:option.CompanyAlias}}</span>
+                                                @*<span>{{formatTime(option.StartDate, option.ExpirationDate)}}</span>*@
+                                            <span>{{option.StartDate|dateFormat}}-{{option.ExpirationDate|monthFormat}}</span>
+                                            </div>
+                                        </li>
+                                        <!-- END timeline item -->
+                                    </ul>
+                                    <button :ref="'workListBtn'+i" class="btn btn-sm btn-outline-default " v-if="item.WorkExperienceList.length>2" style="margin-left:10px; " @@click="workListToggle(i)"><i class="fas fa-angle-double-down color-gray-light un-width"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="pull-right color-gray small ">
+                            <a class="btn btn-sm btn-info" :href="'/candidate/item?code='+item.UniCode" target="_blank"><i class="fa fa-file-alt"></i> 查看简历</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <el-pagination @@current-change="currentChange"
+                                       layout="prev, pager, next"
+                                       :page-size="form.pageSize"
+                                       :current-page="form.pageIndex"
+                                       :total="form.total">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-right col-md-4">
+                <div class="card ">
+                    <div class="card-header">
+                        <span class="card-title">搜索</span>
+                        <button @@click="resetSearch" class="pull-right btn btn-outline-info btn-sm">清空</button>
+                    </div>
+                    <div class="card-body card-block">
+                        <div id="search-menu">
+                            <div class="show-grid">
+                                <el-select v-model="cities"  multiple placeholder="候选人意向城市" style="width:100%;" :multiple-limit="3" @@change="citiesChange">
+                                    <el-option v-for="item in cityOptions"
+                                               :key="item.PKID"
+                                               :label="item.DistrictName"
+                                               :value="item.PKID"
+                                               >
+                                    </el-option>
+                                </el-select>
+                                @*<el-cascader ref="cityCascader" @@change="cityCascaderChange" :options="cityOptions" :props="props" placeholder="意向城市" style="width:100%;" collapse-tags clearable> </el-cascader>*@
+                            </div>
+                            <div class="show-grid">
+                                <el-cascader 
+                                    ref="jobCascader" 
+                                    :options="jobOptions" 
+                                    v-model="functionsDefault" 
+                                    :props="props" 
+                                    placeholder="候选人过往资历"
+                                    id="jobCascader" 
+                                    popper-class="jobCascader"
+                                    @@change="jobChang" 
+                                    style="width:100%;" 
+                                    collapse-tags 
+                                    @@expand-change="jobCascaderVisibleChange"
+                                    @@visible-change="jobCascaderVisibleChange"
+                                    clearable> </el-cascader>
+                            </div>
+                            <div class="show-grid">
+                                <el-input v-model="form.years" :value="form.years==0?null:form.years" maxlength="2" placeholder="候选人工作年限"></el-input>
+                            </div>
+                            <div class="show-grid">
+                                <input type="text" name="name" v-model="salary" placeholder="候选人期望年薪" @@click="salaryDialogVisible = true" class="el-input__inner" readonly  style="font-size: 14px;"/>
+                            </div>
+                            <div class="show-grid">
+                                <el-input v-model="form.position" placeholder="搜索：候选人职位">
+                                    @*<el-button slot="append" icon="el-icon-search" @@click="search"></el-button>*@
+                                </el-input>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-info" @@click="search" :disabled="loading.searchResultLoading"> 搜索</button>
+                        <button type="button" class="btn btn-outline-info" @@click="searchLogDialogVisible = true" >创建搜索模板</button>
+                    </div>
+                </div>
+
+                <div class="card ">
+                    <div class="card-body card-block record">
+                        <div class="card-title">搜索管理 <br><small style="font-size:12px;color:#999;">管理搜索模板，便捷调取搜索条件</small></div>
+
+                        <div>
+                            <div class="record-item" v-for="(item, i) in searchLogList" @@click="getSearchLog(item.SearchUrl)">{{item.SearchName}} <i class="el-icon-close" @@click="delSearchLog(item.PKID,item.SearchName)"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <el-dialog title="输入年薪下限、上限"
+               :visible.sync="salaryDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            @*<div class="col col-md-3" v-for="(item,i) in salaryList">
+                    <div :class="'salary-btn btn btn-block btn-sm  margin-bottom-15 '+(!item.selected?'btn-outline-info':'btn-info')" data-salary="0" @@click="salarySelect(i)">{{item.value}}{{item.value==0?"":"K"}}+</div>
+                </div>*@
+            <div class="">
+                <div class="col col-md-5"><input type="number" min="0" class="el-input__inner" name="salaryMin" v-model="salaryMin" placeholder="薪资下限 K" /> </div>
+                <div class="col col-md-1" style="">_</div>
+                <div class="col col-md-5"><input type="number" min="0" class="el-input__inner" name="salaryMax" v-model="salaryMax" placeholder="薪资上限 K" /> </div>
+            </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="salaryDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="salaryChange">确 定</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog title="新建招聘岗位"
+               :visible.sync="searchLogDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            <p>岗位名称</p>
+            <input type="text" name="searchLogName" v-model="searchLogName" placeholder="输入岗位名称" class="el-input__inner" />
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="searchLogDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="saveSearchLog" :disabled="loading.searchLogLoading"><i v-if="loading.searchLogLoading" class="el-icon-loading"></i> 确 定</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog title="收藏"
+               :visible.sync="followUserDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            <p>选择收藏夹(可多选)</p>
+            <el-select v-model="saveFolders" multiple placeholder="选择收藏夹" style="width:100%;" :multiple-limit="3">
+                <el-option v-for="item in accountFolders"
+                           :key="item.PKID"
+                           :label="item.FolderName"
+                           :value="item.PKID">
+                </el-option>
+            </el-select>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="followUserDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="addfollowUserDialogVisible = true">新增收藏夹</el-button>
+            <el-button type="primary" @@click="followUser">保 存</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog title="收藏"
+               :visible.sync="addfollowUserDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            <p>新建收藏夹</p>
+            <input type="text" name="newFolderName" v-model="newFolderName" placeholder="输入新建收藏夹名称" class="el-input__inner" />
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="addfollowUserDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="saveUserFolder">添 加</el-button>
+        </span>
+    </el-dialog>
+
+</div>
+
+<style>
+    .show-grid {
+        margin-bottom: 15px;
+    }
+
+    .record .record-item {
+        display: inline-block;
+        font-size: 12px;
+        color: #17a2b8;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        margin-right: 5px;
+        cursor: pointer;
+        position: relative;
+        background: #f7f7f7;
+        padding: 5px 10px;
+        padding-right: 20px;
+    }
+
+        .record .record-item i {
+            position: absolute;
+            top: 9px;
+            right: 5px;
+            color: #666;
+        }
+
+        .record .record-item:hover {
+            opacity: .7;
+        }
+
+            .record .record-item:hover i {
+                color: #333;
+            }
+
+    .el-cascader-menu:first-child .el-checkbox {
+        display: none;
+    }
+
+    .el-cascader-menu:first-child + .el-cascader-menu .el-cascader-node[aria-haspopup = true] .el-checkbox {
+        display: none;
+    }
+
+    .salary-btn.btn {
+        padding: 5px 0;
+        text-align: center;
+    }
+    
+    .jobCascader .el-scrollbar .hot{
+        position: relative;
+
+    }
+
+    .jobCascader .el-scrollbar .hot:after{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    content: '';
+    width: 10px;
+    height: 20px;
+    background-image: url(../../Assets/images/func/hot.png);
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+
+    }
+</style>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/index.js")" ></script>

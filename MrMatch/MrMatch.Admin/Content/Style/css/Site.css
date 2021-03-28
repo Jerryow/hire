@@ -1,0 +1,76 @@
+﻿.modal div {
+    overflow: hidden;
+}
+
+#dataTable tbody td {
+    vertical-align: middle;
+}
+
+.products-list > .item {
+    padding: 30px 0;
+}
+
+.products-list .product-img {
+    margin-right: 20px;
+}
+
+    .products-list .product-img img {
+        width: 100%;
+        height: auto;
+    }
+
+.products-list .product-info {
+    margin-left: 0;
+    font-size: 1.5em;
+    line-height: 2;
+}
+
+
+.gallery-list {
+    text-align: center;
+    line-height: 2;
+}
+
+    .gallery-list img {
+        border: 1px #ccc solid;
+        padding: 5px;
+    }
+
+.order-block {
+    line-height: 2;
+    font-size: 13px;
+}
+
+    .order-block div {
+        padding: 5px 0;
+    }
+
+        .order-block div span:first-child {
+            color: #999;
+        }
+
+        .order-block div span:last-child {
+            color: #333;
+        }
+
+.border-bottom {
+    border-bottom: 1px #ddd solid;
+}
+
+pre {
+    border: 0;
+    text-align: left;
+    background: none;
+    font-family: 'Microsoft YaHei', Arial;
+    font-size: unset;
+    padding: unset;
+    margin: unset;
+}
+
+.isShow {
+    display: block;
+}
+
+.isHide {
+    display: none;
+}

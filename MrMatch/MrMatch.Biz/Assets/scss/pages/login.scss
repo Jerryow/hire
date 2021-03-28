@@ -1,0 +1,236 @@
+.login {
+    background: #FFF;
+    width: 100%;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 1670px;
+    height: 100%;
+    height: calc(100vh - 135px);
+    min-height: 580px;
+    position: relative;
+}
+
+    .login-card > div {
+        position: absolute;
+        /*height: 469px;*/
+        right: 20px;
+        top: 50%;
+        transform: translateX(0) translateY(-50%);
+        display: inline-block;
+        transition: all 0.8s;
+        background: white;
+        border-radius: 20px;
+    }
+
+    .login-card .card-box .er-box {
+        position: absolute;
+        right: 20px;
+        top: 0;
+        cursor: pointer;
+    }
+
+.login-bg {
+    /*position: absolute;
+    top: 135px;
+    left: 0;*/
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    background-image: url(/Assets/images/login_bg.png);
+    background-repeat: no-repeat;
+    background-position: 177px center;
+    z-index: 9;
+}
+
+@media screen and (max-width: 1280px) {
+
+    /*.login-card > div {
+        right: 50%;
+        transform: translateX(50%) translateY(-50%);
+        display: inline-block;
+    }*/
+
+    .login-bg {
+        background-position: 0 center;
+    }
+}
+
+.login-card .logo {
+    width: 80px;
+    /* height: 60px; */
+    margin: 0 auto;
+    display: block;
+}
+
+.tagline {
+    text-align: center;
+}
+
+    .tagline > div {
+        display: inline-block;
+        font-size: 16px;
+        position: relative;
+    }
+
+        .tagline > div:before, .tagline > div:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        .tagline > div:before {
+            left: -20px;
+        }
+
+        .tagline > div:after {
+            right: -20px;
+        }
+
+.card-box {
+    padding: 20px;
+    width: 380px;
+    color: #333;
+    text-align: left;
+    box-sizing: content-box;
+}
+
+    .card-box input {
+        height: 48px;
+        line-height: 48px;
+    }
+
+        .card-box input:-webkit-autofill {
+            background-color: transparent !important;
+        }
+
+    .card-box > div > div {
+        margin: 10px 0;
+    }
+
+.hint {
+    height: 22px;
+    font-size: 16px;
+    color: #ea6161;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .hint i {
+        font-size: 18px;
+        color: #ea6161;
+        vertical-align: text-bottom;
+    }
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+}
+
+input[type=text]:focus, input[type=password]:focus, textarea:focus {
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+}
+
+.input-line {
+    border-bottom: 1px solid #dfdfdf;
+    font-size: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+    .input-line > div {
+        position: relative;
+        text-align: left;
+    }
+
+    .input-line input {
+        background: none;
+        outline: none;
+        border: none;
+        font-size: 16px;
+        line-height: 1;
+        padding: 0 10px;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+        .input-line input[type=text],
+        .input-line input[type=password] {
+            border: none;
+        }
+
+    .input-line .input-left,
+    .input-line .input-right {
+        position: absolute;
+        top: 0;
+        text-align: center;
+    }
+
+    .input-line .input-left {
+        left: 0;
+    }
+    .input-line .input-left div{
+        font-size: 16px;
+        color: rgb(51, 51, 51);
+        line-height: 48px;
+        width: 60px;
+    }
+
+    .input-line .input-right {
+        right: 0;
+    }
+
+.slide-checkbox {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #86e3b0;
+    background: #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+    .slide-checkbox input[type="checkbox"] {
+        visibility: hidden;
+        position: absolute;
+        top: 0;
+        left: -50px;
+    }
+
+    .slide-checkbox .slide-checkbox-i {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #fff;
+        background: #fff;
+        border-radius: 50%;
+        box-sizing: border-box;
+        transition: all .2s ease;
+    }
+
+
+    .slide-checkbox label {
+        padding-left: 19px;
+        margin-top: -1px;
+        font-size: 14px;
+        color: rgba(153,153,153,1);
+        width: 200px;
+        line-height: 1;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .slide-checkbox input[type="checkbox"]:checked + label .slide-checkbox-i {
+        border: 2px solid #fff;
+        background: #86e3b0;
+    }

@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C98B5151-4DA3-4C72-B9B6-CBE2E37F4854}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MrMatch.Application</RootNamespace>
+    <AssemblyName>MrMatch.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Auth\AuthService.cs" />
+    <Compile Include="Auth\IAuthService.cs" />
+    <Compile Include="BoolMessageOup.cs" />
+    <Compile Include="Cache\ClearCacheHelper.cs" />
+    <Compile Include="Cache\SetCacheHelper.cs" />
+    <Compile Include="Cache\GetCacheHelper.cs" />
+    <Compile Include="Cache\InitCacheHelper.cs" />
+    <Compile Include="CommonEnum.cs" />
+    <Compile Include="Company\CompanyService.cs" />
+    <Compile Include="Company\ICompanyService.cs" />
+    <Compile Include="Company\Inp\AddOrUpdateAccountInp.cs" />
+    <Compile Include="Company\Inp\AddOrUpdateAgentCompanyInp.cs" />
+    <Compile Include="Company\Inp\AddOrUpdateCompanyInp.cs" />
+    <Compile Include="Company\Inp\AddOrUpdateContractInp.cs" />
+    <Compile Include="Company\Inp\AddOrUpdateLetterInp.cs" />
+    <Compile Include="Company\Inp\RegistCompanyInp.cs" />
+    <Compile Include="Company\Inp\UpdateAccountBasicInp.cs" />
+    <Compile Include="Company\Inp\UpdateCompanyInp.cs" />
+    <Compile Include="Company\Inp\UploadLisenceInp.cs" />
+    <Compile Include="Company\Inp\UploadLogoInp.cs" />
+    <Compile Include="Company\Oup\AccountBasicOup.cs" />
+    <Compile Include="Company\Oup\AccountOup.cs" />
+    <Compile Include="Company\Oup\AgentCompanyListOup.cs" />
+    <Compile Include="Company\Oup\AgentCompanySingleOup.cs" />
+    <Compile Include="Company\Oup\AgentCompanyOup.cs" />
+    <Compile Include="Company\Oup\CompanyDetailsOup.cs" />
+    <Compile Include="Company\Oup\CompanyOup.cs" />
+    <Compile Include="Company\Oup\CompanyPagenationOup.cs" />
+    <Compile Include="Company\Oup\InviteCompaniesOup.cs" />
+    <Compile Include="Company\Oup\JobAccountOup.cs" />
+    <Compile Include="Company\Oup\LetterOup.cs" />
+    <Compile Include="Config\ConfigService.cs" />
+    <Compile Include="Config\IConfigService.cs" />
+    <Compile Include="Config\Inp\AddChildrenFunctionInp.cs" />
+    <Compile Include="Config\Inp\AddOrUpdateCountryInp.cs" />
+    <Compile Include="Config\Inp\AddOrUpdateDistrictInp.cs" />
+    <Compile Include="Config\Inp\AddOrUpdateFunctionInp.cs" />
+    <Compile Include="Config\Inp\AddOrUpdateSkillsInp.cs" />
+    <Compile Include="Config\Inp\AddOrUpdateTagsInp.cs" />
+    <Compile Include="Config\Oup\AllDistrictListOup.cs" />
+    <Compile Include="Config\Oup\AllCountryListOup.cs" />
+    <Compile Include="Config\Oup\AllParentTagsListOup.cs" />
+    <Compile Include="Config\Oup\AllFunctionListOup.cs" />
+    <Compile Include="Config\Oup\AllSkillListOup.cs" />
+    <Compile Include="Config\Oup\AllTagsListOup.cs" />
+    <Compile Include="Config\Oup\ChildrenDistrictListOup.cs" />
+    <Compile Include="Config\Oup\FirtstTagListOup.cs" />
+    <Compile Include="Config\Oup\FunctionFirstCascaderOup.cs" />
+    <Compile Include="Config\Oup\HotDistrictOup.cs" />
+    <Compile Include="Config\Oup\ProvinceListOup.cs" />
+    <Compile Include="Config\Oup\TagListOup.cs" />
+    <Compile Include="Config\Oup\TagsListOup.cs" />
+    <Compile Include="Config\Oup\TagsOup.cs" />
+    <Compile Include="Config\Oup\SkillsOup.cs" />
+    <Compile Include="Config\Oup\SkillsListOup.cs" />
+    <Compile Include="Config\Oup\FunctionOup.cs" />
+    <Compile Include="Config\Oup\FunctionListOup.cs" />
+    <Compile Include="Config\Oup\DistrictListOup.cs" />
+    <Compile Include="Config\Oup\DistrictOup.cs" />
+    <Compile Include="Config\Oup\CountryOup.cs" />
+    <Compile Include="Config\Oup\CountryListOup.cs" />
+    <Compile Include="Job\Inp\JobDraftInp.cs" />
+    <Compile Include="Job\Inp\JobPublishInp.cs" />
+    <Compile Include="Job\Inp\UserReportInp.cs" />
+    <Compile Include="Job\JobService.cs" />
+    <Compile Include="Job\IJobService.cs" />
+    <Compile Include="Job\Oup\AddOrUpdateJobOup.cs" />
+    <Compile Include="Job\Oup\BizJobDetailsOup.cs" />
+    <Compile Include="Job\Oup\JobDraftDetailsOup.cs" />
+    <Compile Include="Job\Oup\JobDetailsOup.cs" />
+    <Compile Include="Job\Oup\JobListOup.cs" />
+    <Compile Include="Job\Oup\JobManageListOup.cs" />
+    <Compile Include="Job\Oup\JobMiniPicUrlOup.cs" />
+    <Compile Include="Job\Oup\JobProfilesListOup.cs" />
+    <Compile Include="LogicHelper.cs" />
+    <Compile Include="LoginOrRegist\Inp\BizRegistInp.cs" />
+    <Compile Include="LoginOrRegist\Inp\BizLoginInp.cs" />
+    <Compile Include="LoginOrRegist\Oup\BizSignInOup.cs" />
+    <Compile Include="LoginOrRegist\Oup\SignInOup.cs" />
+    <Compile Include="LoginOrRegist\SignInOrUpService.cs" />
+    <Compile Include="LoginOrRegist\ISignInOrUpService.cs" />
+    <Compile Include="LoginOrRegist\Inp\AdminLoginInp.cs" />
+    <Compile Include="PagenationInput.cs" />
+    <Compile Include="PagenationOutput.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SendMessage\Inp\SendPhoneInp.cs" />
+    <Compile Include="SendMessage\SendMessageService.cs" />
+    <Compile Include="SendMessage\ISendMessageService.cs" />
+    <Compile Include="System\Inp\AddOrUpdateMsgConfigInp.cs" />
+    <Compile Include="System\Inp\AddOrUpdateMsgTemplateInp.cs" />
+    <Compile Include="System\Inp\AddOrUpdateNoticeInp.cs" />
+    <Compile Include="System\Inp\AddOrUpdateSiteConfigInp.cs" />
+    <Compile Include="System\Inp\AddOrUpdateSystemUserInp.cs" />
+    <Compile Include="System\Oup\MessageTemplateOup.cs" />
+    <Compile Include="System\Oup\MessageTemplateListOup.cs" />
+    <Compile Include="System\Oup\MessageConfigListOup.cs" />
+    <Compile Include="System\Oup\MessageConfigOup.cs" />
+    <Compile Include="System\Oup\NoticeOup.cs" />
+    <Compile Include="System\Oup\NoticeListOup.cs" />
+    <Compile Include="System\Oup\SiteConfigOup.cs" />
+    <Compile Include="System\Oup\SiteConfigListOup.cs" />
+    <Compile Include="System\Oup\SystemUserListOup.cs" />
+    <Compile Include="System\Oup\SystemUserOup.cs" />
+    <Compile Include="System\SystemService.cs" />
+    <Compile Include="System\ISystemService.cs" />
+    <Compile Include="User\Inp\AddOrUpdateUserJobBoardInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateUserTagsInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateAvoidInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateJobIntentionInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateEducationInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateWorkExperienceInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateWechatMessageInp.cs" />
+    <Compile Include="LoginOrRegist\Inp\MobileLoginInp.cs" />
+    <Compile Include="LoginOrRegist\Inp\QRLoginInp.cs" />
+    <Compile Include="User\Inp\AddOrUpdateProfileInp.cs" />
+    <Compile Include="User\Inp\UploadUserAvatarInp.cs" />
+    <Compile Include="User\IUserService.cs" />
+    <Compile Include="User\Oup\AllProfileOup.cs" />
+    <Compile Include="User\Oup\AvoidOup.cs" />
+    <Compile Include="User\Oup\SystemNoticeUserOup.cs" />
+    <Compile Include="User\Oup\WechatAccountOup.cs" />
+    <Compile Include="User\Oup\BasicUserOup.cs" />
+    <Compile Include="User\Oup\EducationSnapOup.cs" />
+    <Compile Include="User\Oup\JobIntentionOup.cs" />
+    <Compile Include="User\Oup\ProfileOup.cs" />
+    <Compile Include="User\Oup\ProfileSnapOup.cs" />
+    <Compile Include="User\Oup\SnapUpdateOup.cs" />
+    <Compile Include="User\Oup\UserListOup.cs" />
+    <Compile Include="User\Oup\UserTagsOup.cs" />
+    <Compile Include="User\Oup\WechatMessagelistOup.cs" />
+    <Compile Include="User\Oup\EducationOup.cs" />
+    <Compile Include="User\Oup\WorkExperienceOup.cs" />
+    <Compile Include="User\Oup\WorkExperienceSnapOup.cs" />
+    <Compile Include="User\UserService.cs" />
+    <Compile Include="Wechat\Oup\WechatTokenOup.cs" />
+    <Compile Include="Wechat\WechatService.cs" />
+    <Compile Include="Wechat\IWechatService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MrMatch.Common\MrMatch.Common.csproj">
+      <Project>{3259cfd0-115c-459a-a3db-bb95a7c3fc35}</Project>
+      <Name>MrMatch.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MrMatch.Domain\MrMatch.Domain.csproj">
+      <Project>{313e2d2c-50fa-4ce0-858e-e391f70fea96}</Project>
+      <Name>MrMatch.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MrMatch.MysqlFramework\MrMatch.MysqlFramework.csproj">
+      <Project>{6ebfdd9b-6e15-43e6-b182-c4bfb4911c3e}</Project>
+      <Name>MrMatch.MysqlFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SendMessage\Oup\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

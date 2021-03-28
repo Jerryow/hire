@@ -1,0 +1,167 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "MessageTemplate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-hand-pointer"></i> 消息模板
+        <small>系统数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-handshake"></i> 系统数据</li>
+        <li class="active"><i class="fas fa-hand-pointer"></i> 消息模板</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box" id="appMsgTemplate">
+        <div class="box-header">
+            <div class="col-sm-4 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    <el-button @@click="addTempalte('form')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                </div>
+            </div>
+            <div class="col-sm-5">
+
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="根据登录名名字搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+            <!-- DB : Job_ApplyInfo -->
+
+            <template>
+                <el-table :data="tableData"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="50px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="TemplateType"
+                                     label="模板类型"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag type="primary"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.TemplateType | tempType}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="TemplateCode"
+                                     label="模板编码"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="TemplateTitle"
+                                     label="模板标题"
+                                     width="150px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="TemplateContent"
+                                     label="模板内容"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="IsActivated"
+                                     label="是否启用"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.IsActivated)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.IsActivated | activeFilter}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作"
+                                     width="100px">
+                        <template slot-scope="scope">
+                            <el-button @@click="edit(scope.row.PKID)" type="text" size="medium">编辑</el-button>
+                            <el-button @@click="setCache(scope.row.PKID)" type="text" size="medium">存入缓存</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" @@click="refresh"><i class="fas fa-redo"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+        <el-dialog title="新增配置" :visible.sync="dialogVisible" :before-close="closeModal" :close-on-press-escape="diaClose" :close-on-click-modal="diaClose">
+            <el-form ref="addForm" :model="addForm" :label-position="labelPosition" :rules="rules" class="demo-form-inline">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="模板类型*" prop="TemplateType">
+                            <el-select v-model="addForm.TemplateType" placeholder="请选择模板类型" style="width:100%">
+                                <el-option label="短信" value="10"></el-option>
+                                <el-option label="邮件" value="20"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="模板标题*" prop="TemplateTitle">
+                            <el-input v-model="addForm.TemplateTitle" placeholder="请输入模板标题名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="模板编码*" prop="TemplateCode">
+                            <el-input v-model="addForm.TemplateCode" placeholder="请输入模板编码(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="模板内容*" prop="TemplateContent">
+                            <el-input type="textarea" :rows="10" placeholder="请输入内容" v-model="addForm.TemplateContent"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="addForm.IsActivated"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+            <span slot="footer" class="dialog-footer">
+                @*<el-button type="primary" @@click="submitForm('form')">提交</el-button>*@
+                <el-button type="primary" @@click="submitForm('addForm')">提交</el-button>
+                <el-button @@click="resetForm('addForm')">重置</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+<script src="@Html.GetCssJsUrl("/Js/system/MessageTemplate.js")">
+</script>

@@ -1,0 +1,87 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "LetterTemplate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>邀请模板</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">邀请模板</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appLetter" v-cloak>
+    <div class="animated fadeIn">
+        <div class="badges">
+            <div class="row">
+                <div class="col col-md-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>邀请模板</strong>
+                            <div class="float-right">
+                                <button class="btn btn-outline-success btn-sm " :disabled="existingLetter>limiteLetter?true:false" @@click="editDialogVisible = true;form.PKID=0" style="font-size:17px;"><i class="fas fa-plus"></i> 新增邀请模板 （{{existingLetter}}/{{limiteLetter}}）</button>
+                            </div>
+                        </div>
+                        <div class="card-body" id="Template_Block">
+                            <div class="card" v-for="(item, i) in letterTemplateList">
+                                <div class="card-header">
+                                    <strong class="card-title">{{item.TemplateName}}</strong>
+                                    <div class="float-right">
+                                        <a class="color-gray-light mr-15 showDetail" @@click="editDialogVisible = true;getLetterDetails(item.PKID)"><i class="far fa-edit"></i></a>
+                                        <a class="color-gray-light " data-toggle="modal" @@click="destroyLetter(item.PKID)"><i class="far fa-trash-alt"></i></a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="card-text">{{item.TemplateContent}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /# card -->
+                </div><!--  /.col-lg-6 -->
+
+            </div> <!-- .badges -->
+
+        </div><!-- .row -->
+    </div><!-- .animated -->
+    <el-dialog title="邀请模板"
+               :visible.sync="editDialogVisible"
+               :close-on-click-modal="false"
+               :before-close="handleClose"
+               width="50%">
+        <div class="row" style="padding:0 15px;">
+            <div class="col col-md-12 mb-15">
+                <label for="TemplateName" class="control-label">模板名称*</label>
+                <input type="text" class="form-control" id="TemplateName" placeholder="模板名称(必填)" value="" v-model="form.TemplateName" />
+            </div>
+            <div class="col col-md-12  mb-15">
+                <label for="TemplateContent" class="control-label">模板内容* (限500字)</label>
+                <textarea rows="10" class="form-control" id="TemplateContent" placeholder="模板内容(必填)" v-model="form.TemplateContent"></textarea>
+            </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="handleClose">取 消</el-button>
+            <el-button type="primary" @@click="saveLetterTemplateDate">确 定</el-button>
+        </span>
+    </el-dialog>
+</div><!-- .content -->
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/letter.js")"  ></script>

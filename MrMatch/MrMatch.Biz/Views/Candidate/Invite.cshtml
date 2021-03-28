@@ -1,0 +1,213 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Invite";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>发起邀约</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>拍卖</li>
+                            <li class="active">发起邀约</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appInvite" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col col-md-9">
+                <div class="card candidate-card ">
+                    <div class="card-header">
+                        @*<strong class="card-title">@(isSignContract ? profile.RealName : profile.RealName.Substring(0, 1)) @(profile.Gender == 1 ? "先生" : "女士")</strong>*@
+                        @*<strong class="card-title" v-if="headerText mr-15">@(WorkExperienceList.Count > 0 ? WorkExperienceList[0].Position : "")</strong>*@
+                        <strong class="card-title">
+                            {{contract&&profile.IsInvited?profile.RealName:(profile.WorkExperienceList.length>0?profile.WorkExperienceList[0].Position:"")}}
+                        </strong>
+                        <small class="color-gray ml-15">No.{{profile.ProfilePKID}}</small>
+
+                        @*计算*@
+                        <span class="badge badge-info" v-if="computePutTime(profile.LastModifiedTime)">本周发布</span>
+
+                        <div class="pull-right">
+                            <button class="btn btn-sm color-gray btn-follow" v-if="profile.IsCollected"><i class="fas fa-star "></i> 已收藏</button>
+
+                            <button class="btn btn-sm color-gray" v-if="!profile.IsCollected"><i class="far fa-star "></i> 收藏</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-3">
+                                <div class="avatar">
+                                    <img src="~/Content/assets/images/avatar/avatar5.png" v-if="profile.Gender==1" />
+                                    <img src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                </div>
+                            </div>
+                            <div class="col col-9 ">
+                                <div class="col col-12"><i class="fas fa-map-marker color-gray-light"></i>当前居住：{{profile.Residence}}</div>
+                                <div class="col col-12"><i class="fas fa-yen-sign color-gray-light"></i>当前年薪：{{profile.AnnualSalary}}万</div>
+                                <div class="col col-12"><i class="fas fa-yen-sign color-gray-light"></i>期望年薪：{{profile.JobIntention.AnnualSalary}}万</div>
+                                <div class="col col-12"><i class="fas fa-user color-gray-light"></i>当前职位：{{profile.CurrentPosition}} {{profile.WorkYears}} 年</div>
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>主要学历：
+                                    <span class="padding-5"> {{profile.EducationList[0].SchoolName}},{{profile.EducationList[0].Degree}},{{profile.EducationList[0].MajorSubject}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" v-if="!contract">
+                    <div class="card-body bg-aqua">
+                        <i class="fa  fa-info-circle"></i> {{contractHelp}}
+                    </div>
+                </div>
+                <div class="card" v-else-if="exist">
+                    <div class="card-body">
+                        有待回应邀请，暂无法重复发送。
+                    </div>
+                </div>
+                <div class="card" v-else>
+                    <div class="card-body">
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="select" class=" form-control-label">选择模板</label> <a href="javascript:void(0)" @@click="templateRedirect" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i>模板管理</a> </div>
+                            <div class="col col-md-9">
+                                <div class="form-group">
+                                    <el-select name="select" v-model="letterID" @@change="selectChnage">
+                                        <el-option v-for="item in letterTemplateList"
+                                                   :value="item.PKID"
+                                                   :label="item.TemplateName"></el-option>
+                                    </el-select>
+                                    <a href="javascript:void(0)" @@click="getLetterList" class="btn btn-default btn-sm"><i class="fas fa-acquisitions-incorporated"></i>刷新模板</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-12" style="font-size:13px;color:red;">
+                                *选择模板可以帮助你更快的输入邀请的招呼语.
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-12">
+                                <textarea class="form-control" rows="10" v-model="letterContent"></textarea>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-12">
+                                <button class="btn btn-success pull-right" type="button" @@click="sendInviteLetter" :disabled="loading.submitLoading">邀请 <i class="fa fa-arrow-circle-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card" v-if="exist">
+                    <div class="card-body">
+                        <div class="direct-chat-messages " style="height:unset;" v-for="item in inviteList">
+                            <!-- Message. Default to the left -->
+                            <div class="direct-chat-msg">
+                                <div class="direct-chat-info clearfix">
+                                    <span class="direct-chat-name pull-left">{{accountName}}</span>
+                                    <span class="direct-chat-timestamp pull-right"><i class="far fa-clock"></i>{{item.CreatedTime|dateFormat}}</span>
+                                </div>
+                                <!-- /.direct-chat-info -->
+                                <div class="direct-chat-img">
+                                    <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                </div>
+                                <!-- /.direct-chat-img -->
+                                <div class="direct-chat-text ">
+                                    <pre>{{item.InviteLetter}}</pre>
+                                </div>
+                                <!-- /.direct-chat-text -->
+                            </div>
+
+
+
+                            <span class="pull-right color-gray-light small" v-if="item.InviteStatus==0&&(Date.parse(item.ExpirationDate)<Date.now())">已过期 <i class="far fa-calendar-times"></i>{{item.ExpirationDate|dateFormat}}</span>
+                            <span class=" pull-right text-info small" v-if="item.InviteStatus==0&&(Date.parse(item.ExpirationDate)>Date.now())">待回应 <i class="far fa-calendar-alt"></i>{{item.ExpirationDate|dateFormat}}</span>
+
+                            <div class="direct-chat-primary" v-if="item.InviteStatus==1">
+                                <div class="direct-chat-msg right col-md-8 pull-right">
+                                    <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">{{profile.RealName}}</span>
+                                        <span class="direct-chat-timestamp pull-left"><i class="far fa-clock"></i>{{item.LastModifiedTime|dateFormat}}</span>
+                                    </div>
+                                    <!-- /.direct-chat-info -->
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar5.png" v-if="profile.Gender==1" />
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                    <div class="direct-chat-text">
+                                        候选人已接受您的邀约 <i class="fa fa-check-circle"></i> <a class="btn btn-sm btn-outline-info" :href="item.InterviewID>0?'/job/interviewitem?id='+item.InterviewID:'/job/interview'"><i class="fas fa-handshake"></i> 查看候选人电话</a>
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                            </div>
+                            <div class="direct-chat-warning" v-if="item.InviteStatus==2">
+                                <div class="direct-chat-msg right col-md-8 pull-right">
+                                    <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">{{profile.RealName}}</span>
+                                        <span class="direct-chat-timestamp pull-left"><i class="far fa-clock"></i>{{item.LastModifiedTime|dateFormat}}</span>
+                                    </div>
+                                    <!-- /.direct-chat-info -->
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar5.png" v-if="profile.Gender==1" />
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                    <!-- /.direct-chat-img -->
+                                    <div class="direct-chat-text">
+                                        候选人已拒绝您的邀约 <i class="fa fa-times-circle"></i>
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                            </div>
+
+                            <!-- /.direct-chat-msg -->
+                        </div>
+                        <!-- /.direct-chat-msg -->
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col col-md-3">
+                <div class="card calling-card">
+                    <div class="card-body ">
+                        <div class="calling-head">需要帮助？</div>
+                        <div class="calling-title">
+                            杨森华
+                            <small>客户成功经理</small>
+                        </div>
+                        <div class="calling-content">
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">联系电话：</div>
+                                <div class="calling-val">+86-13818163713</div>
+                            </div>
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">邮箱：</div>
+                                <div class="calling-val">business@mrmatch.net</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/invite.js")" ></script>

@@ -1,0 +1,153 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Follow";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>我收藏的人才</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>人才市集Marketplace</li>
+                            <li class="active">我收藏的人才</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appFollow" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row ">
+            <div class="col col-md-12 candidate-list" id="candidate-list">
+                <div class="card candidate-card">
+                    <div class="card-body row">
+                        <div class="col col-md-10 follow-list">
+                            <a :class="'btn btn-default btn-sm '+(active==-1?'btn-info':'')" href="/candidate/follow">全部</a>
+                            <a v-for="(item,i) in folders" :class="'btn btn-default btn-sm '+(active==i?'btn-info':'')" :href="'/candidate/follow?folder='+item.PKID">{{item.FolderName}}</a>
+                        </div>
+                        <div class="col col-md-2 col-right text-right clearfix">
+                            <a href="/Candidate/ManageFollow" class="btn btn-sm bg-gray-light"><i class="far fa-folder"></i>  编辑收藏夹</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card candidate-card" v-for="(user,i) in profile" v-if="profile">
+                    <div class="card-header">
+                        <strong class="card-title">{{contract && user.IsInvited ? user.RealName : (user.WorkExperienceList.Count > 0 ? user.WorkExperienceList[0].Position : "")}}</strong>
+                        <small class="color-gray">No.{{user.ProfilePKID}}</small>
+                        <span class="badge badge-info " v-if="computePutTime(user.LastModifiedTime)">本周发布</span>
+                        <div class="pull-right">
+                            <button class="btn btn-sm color-gray button-modify" @@click="clickUserFollow(user.UserID)"><i class="far fa-folder"></i> 收藏夹</button>
+                            <button class="btn btn-sm color-gray" @@click="delProfile(user.UserID)"><i class="far fa-trash-alt "></i> 取消</button>
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="user.Intention.AnnualSalary">
+                            <label class="color-gray">期望年薪：</label>{{(user.Intention.AnnualSalary/1000).toFixed(2)}} K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="user.AnnualSalary">
+                            <label class="color-gray">当前年薪：</label>{{(user.AnnualSalary/ 1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;">
+                            <label class="color-gray">所在城市：</label>{{user.Residence}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-2">
+                                <div class="avatar text-center">
+                                    <img :src="user.AvatarUrl" v-if="user.AvatarUrl" />
+                                    <img src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                </div>
+                            </div>
+                            <div class="col col-10 ">
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>
+                                    <span class="padding-5">主要学历： {{user.EducationList[0].SchoolName}},{{user.EducationList[0].Degree}},{{user.EducationList[0].MajorSubject}}</span>
+
+                                </div>
+                                <div class="col col-12">
+                                    <i class="fas fa-briefcase color-gray-light"></i>
+                                    {{user.CurrentPosition}} 职位,{{user.WorkYears}}年
+                                </div>
+                                <div class="col col-12 no-padding">
+                                    <ul :ref="'workList'+i" class="timeline" v-if="user.WorkExperienceList">
+                                        <!-- timeline item -->
+                                        <li :class="j<2?'':'hidden'" v-for="(option, j) in user.WorkExperienceList">
+                                            <!-- timeline icon -->
+                                            <i class="far fa-circle"></i>
+                                            <div class="timeline-item">
+                                                <span class="text-black">{{option.Position}}</span>
+                                                <span>{{contract?option.CompanyName:option.CompanyAlias}}&nbsp;&nbsp;&nbsp;</span>
+                                                <span>{{option.StartDate|dateFormat}}-{{option.ExpirationDate|monthFormat}}</span>
+                                            </div>
+                                        </li>
+                                        <!-- END timeline item -->
+                                    </ul>
+                                    <button :ref="'workListBtn'+i" class="btn btn-sm btn-outline-default " v-if="true" style="margin-left:10px; " @@click="workListToggle(i)"><i class="fas fa-angle-double-down color-gray-light un-width"></i></button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer ">
+                        <div class="row">
+                            <div class="col color-gray small ">
+                                {{user.ApproveStatus}} - {{user.ActivityStatus}}
+                            </div>
+
+                            <div class="col color-gray small ">
+                                <a class="btn btn-sm btn-info pull-right" :href="'/candidate/item?code='+user.UniCode" target="_blank"><i class="fa fa-file-alt"></i> 查看简历</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <el-pagination @@current-change="currentChange"
+                                       layout="prev, pager, next"
+                                       :page-size="form.pageSize"
+                                       :current-page="form.pageIndex"
+                                       :total="form.total">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <el-dialog title="收藏夹"
+               :visible.sync="followUserDialogVisible"
+               :close-on-click-modal="false"
+               width="30%">
+        <div class="row" style="padding:0 15px;">
+            <p>选择收藏夹(可多选)</p>
+            <el-select v-model="userFolders" multiple placeholder="选择所属收藏夹" style="width:100%;">
+                <el-option v-for="item in folders"
+                           :key="item.PKID"
+                           :label="item.FolderName"
+                           :value="item.PKID">
+                </el-option>
+            </el-select>
+
+            @*<div class="col col-md-3" v-for="(item,i) in folders">
+                    <div :class="'salary-btn btn btn-block btn-sm  margin-bottom-15 '+(!item.PKID?'btn-outline-info':'btn-info')" data-salary="0" @@click="followSelect(item.PKID)">{{item.FolderName}}</div>
+                </div>*@
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="followUserDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="editProfile"  :disabled="loading.editFollowLoading"><i v-if="loading.editFollowLoading" class="el-icon-loading"></i> 确 定</el-button>
+        </span>
+    </el-dialog>
+</div>
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/follow.js")" ></script>

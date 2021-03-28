@@ -1,0 +1,44 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "WechatSiteMessageContent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-user"></i> 消息内容
+        <small>基础数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-users-cog"></i> 基础数据</li>
+        <li class="active"><i class="fas fa-user"></i> 消息内容</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box" id="appMsgContent">
+        <el-form ref="form" :model="form" :label-position="labelPos" :rules="rules" label-width="80px;">
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="消息内容*" prop="MessageContent">
+                        <el-input type="textarea" wigth="100%" :rows="10" v-model="form.MessageContent" placeholder="请输入消息内容(必填)"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @@click="submitForm('form')" v-if="btnShow.addShow">新增</el-button>
+            <el-button type="primary" @@click="updateForm('form')" v-if="btnShow.updateShow">修改</el-button>
+            <el-button @@click="redirectIndex">返回</el-button>
+        </span>
+    </div><!-- /.box -->
+</section>
+
+
+
+<script src="@Html.GetCssJsUrl("/Js/system/WechatSiteMessageContent.js")">
+</script>
+

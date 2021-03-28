@@ -1,0 +1,338 @@
+﻿
+@import "./_variable.scss";
+/***
+**reset
+**/
+body {
+    font-family: arial,helvetica,sans-serif;
+    font-size: 14px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #333;
+}
+
+body, button, dd, dl, fieldset, form, h1, h2, h3, h4, h5, h6, input, legend, ol, p, select, td, textarea, th, ul {
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+    font-weight: 400
+}
+
+table {
+    font-size: inherit
+}
+
+input, select {
+    font-family: arial,helvetica,clean,sans-serif;
+    font-size: 100%;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: normal
+}
+
+button {
+    overflow: visible
+}
+
+address, b, cite, em, strong, th {
+    font-style: normal;
+    font-weight: 400
+}
+
+li {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none
+}
+
+fieldset, img {
+    border: 0 none
+}
+
+ins {
+    text-decoration: none
+}
+
+a,
+a:active,
+a:focus,
+a:visited {
+    text-decoration: none;
+    color: inherit;
+}
+a:active{
+    color: inherit;
+}
+
+a.link{ 
+    color:$color-primary;
+
+    &:hover{
+        opacity:.9;
+    }
+}
+
+//字体
+@import '../iconfont/iconfont.css';
+
+// 布局（grid）
+@import './common/_grid.scss';
+// 模块（module）
+@import './common/_module.scss';
+// 元件（unit）
+@import './common/_unit.scss';
+// 功能（function）
+@import './common/_function.scss';
+// 皮肤（skin）
+@import './common/_skin.scss';
+
+
+.header {
+    $height: 60px;
+
+    width: 100%;
+    height: $height;
+    background: #fff;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.05);
+
+
+    .logo {
+        float: left;
+        padding-top: 15px;
+    }
+
+    .nav {
+        float: left;
+        height: $height;
+        line-height: 60px;
+    }
+
+    .user-nav {
+        float: right;
+        height: $height;
+        line-height: 60px;
+
+        li {
+            position: relative;
+
+            & > a {
+                height: $height;
+                display: inline-block;
+
+                span {
+                    margin-right: 20px;
+                    color: #333;
+                }
+
+                img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 8px;
+                    display: inline-block;
+                    background: #efefef;
+                    vertical-align: middle;
+                    object-fit:cover;
+                }
+            }
+
+            &:hover {
+                .dropdown {
+                    display: block;
+                }
+            }
+
+            .dropdown {
+                position: absolute;
+                top: $height;
+                right: 0;
+                width: 200px;
+                background: #eee;
+                display: none;
+                z-index: 10;
+                border: 1px solid #eee;
+                /*&:after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 200px;
+                    height: 100%;
+                    box-shadow: 0 0 5px 0 rgba(0,0,0,.1);
+                    z-index: 10;
+                }
+
+                &:before {
+                    content: '';
+                    position: absolute;
+                    top: -5px;
+                    right: 0;
+                    width: 200px;
+                    height: 5px;
+                    background:#fff;
+                    z-index: 15;
+                }*/
+                &:hover {
+                    display: block;
+                }
+
+                a {
+                    display: block;
+                    padding: 10px 10px 10px 20px;
+                    width: 100%;
+                    color: #333;
+                    height: initial;
+                    line-height: 1.4;
+                    background: #fff;
+                    box-sizing: border-box;
+
+                    &:hover {
+                        color: $color-primary;
+                        transition: color .3s;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.footer {
+    background: #fff;
+    padding: 30px 20px 0;
+    font-size: 14px;
+
+    .footer-active {
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .logo-box {
+        padding-top: 4px;
+
+        & > div {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .logo {
+            width: 64px;
+            vertical-align: middle;
+        }
+    }
+
+    .ercodes {
+        position: relative;
+        margin-left: 20px;
+
+        li {
+            position: relative;
+            margin: 0 5px;
+            display: inline-block;
+            vertical-align:top;
+
+            .ercodes-side {
+                display: none;
+                position: absolute;
+                top: -165px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: #fff;
+                text-align:center;
+                box-shadow: 0px 3px 16px 0px rgba(0,0,0,0.08);
+                z-index: 10;
+
+                .er {
+                    width: 120px;
+                    height: 120px;
+                    background: #eee;
+
+                    img {
+                        width: 100%;
+                        height: 100%
+                    }
+                }
+
+                P {
+                    color: #333;
+                    font-size: 12px;
+                    margin-top: 5px
+                }
+            }
+
+            &:hover .ercodes-side {
+                display: block
+            }
+
+
+            .icon-round {
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                text-align: center;
+                border-radius: 50%;
+                transition: all 0.3s ease 0s;
+                cursor: pointer;
+                color: $color-gray;
+                border: 1px solid $color-gray;
+
+                &:hover {
+                    border-color: $color-primary;
+                    color: $color-primary;
+                }
+            }
+        }
+    }
+
+    .footer-bottom {
+        margin: 10px 0;
+        line-height: 1;
+        color: $color-gray;
+    }
+
+    .footer-bottom > div {
+        padding: 15px 0;
+    }
+
+    .footer-nav {
+        padding-top: 20px;
+
+        a {
+            margin-right: 40px;
+            position: relative;
+
+            &:after {
+                position: absolute;
+                top: 4px;
+                left: -20px;
+                content: "";
+                width: 2px;
+                height: 10px;
+                background: #cdcdcd;
+            }
+
+            &:first-child:after {
+                display: none
+            }
+        }
+    }
+
+    .email p + p, .info p {
+        margin-top: 10px
+    }
+}
+
+.el-textarea .el-input__count {
+    line-height: 1;
+    background: none;
+     bottom: -18px; 
+}

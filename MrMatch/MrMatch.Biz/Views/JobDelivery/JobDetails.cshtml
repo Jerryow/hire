@@ -1,0 +1,322 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "JobDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>职位管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>Job Board</li>
+                            <li class="active">职位管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appJobDetails" v-cloak>
+    <div class="animated fadeIn">
+    
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-12 col-md-8 margin-bottom-30">
+                                <div> <h4>{{profileForm.jobName}} <small>(编号：{{profileForm.PKID}})</small></h4> </div>
+                            </div>
+                            <div class="col col-12 col-md-4 margin-bottom-10 text-right">
+                                <p><small class="">{{profileForm.lastModifiedTime|DateFilter}}</small></p>
+                            </div>
+                            <div class="col col-12 col-md-12 ">
+                                <small >公司全称：{{profileForm.companyName}}</small>
+                            </div>
+                            <div class="col col-12 col-md-6 ">
+                                <small >上架状态：{{profileForm.status==0?'下架':'上架'}}</small>
+                            </div>
+                            <div class="col col-12 col-md-6 " v-show="false">
+                                <small >浏览量：100</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <el-tabs v-model="activeName" type="card" @@tab-click="handleClick">
+                            <el-tab-pane label="简历" name="profile">
+                                @*上架的职位*@
+                                <div class="row margin-bottom-10  ">
+                                    <div class="col col-12 "> 
+                                        <el-table
+                                            v-loading="loading"
+                                            :data="list"
+                                            border
+                                            empty-text="未找到相关简历"
+                                            style="width: 100%">
+                                            <el-table-column
+                                                label="姓名">
+                                                <template slot-scope="scope">
+                                                <span  class="overflow-multiLine" :title="scope.row.UniCode">{{ scope.row.RealName }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="性别">
+                                                <template slot-scope="scope">
+                                                    <span class="overflow-multiLine" :title="scope.row.JobName">{{ scope.row.Gender | ValidateGender}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="工作年限">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.WorkYears">{{ scope.row.WorkYears  }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="最新职位">
+                                                <template slot-scope="scope">
+                                                    <span class="overflow-multiLine" :title="scope.row.JobCompanyShortName">{{ scope.row.CurrentPosition }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="最新公司">
+                                                <template slot-scope="scope">
+                                                <span class="overflow-multiLine" :title="scope.row.ApplyCount">{{ scope.row.CurrentCompany }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="投递时间">
+                                                <template slot-scope="scope">
+                                                    <span class="overflow-multiLine" :title="scope.row.LastModifiedTime">{{ scope.row.ApplyTime | DateFilter }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="操作">
+                                                <template slot-scope="scope">
+                                                    <a :href="'/candidate/item?code='+scope.row.UniCode" target="_blank"><el-button  type="text" size="small" >查看简历</el-button></a>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
+                                </div>
+
+                                <div class="card-body text-center">
+                                     <el-pagination
+                                      :total="pagenation.total"
+                                      @@current-change="currentChange"
+                                      layout="prev, pager, next">
+                                    </el-pagination>
+                                </div>
+
+                            </el-tab-pane>
+                            <el-tab-pane label="职位信息" name="details">
+                                <div class="row " >
+                                    <div class="col col-12" style="margin:20px 0">
+                                        <a :href="'/jobdelivery/publish?id='+detailsForm.PKID" target="_blank"><button type="button" class="btn btn-info"> 编辑 </button></a>
+                                    </div>
+                                </div>
+                                <el-form  label-width="120px" label-position="left" class="publish-form">
+                                    <div class="row form-group">
+                                        <div class="col">企业基本信息  </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="公司全称" style="margin-bottom:10px">
+                                                {{detailsForm.JobCompanyName | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="对外显示名称" style="margin-bottom:10px" >
+                                                {{detailsForm.agentShortName | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col">职位基本信息 - 基本信息 </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="职位名称" style="margin-bottom:10px">
+                                                {{detailsForm.JobName | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="职能" style="margin-bottom:10px" >
+                                                {{detailsForm.funcListName | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="工作地点" style="margin-bottom:10px" >
+                                                {{detailsForm.distListName | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="汇报对象" style="margin-bottom:10px" >
+                                                {{detailsForm.Reporter | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="下属人数" style="margin-bottom:10px" >
+                                                {{detailsForm.SubordinateCount | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col">职位基本信息 - 薪资福利  </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="税前年薪(k)" style="margin-bottom:10px" >
+                                                {{detailsForm.salaryOff + '-' + detailsForm.salaryOn | ValueValidFilter}} 
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="是否对外显示" style="margin-bottom:10px" >
+                                                {{detailsForm.salaryOpen?"显示":"不显示" | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="薪资构成" style="margin-bottom:10px" >
+                                                {{detailsForm.salaryComposition + (detailsForm.salaryCompositionExtra?','+detailsForm.salaryCompositionExtra:'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="社保福利" style="margin-bottom:10px" >
+                                                {{detailsForm.socialSecurity + (detailsForm.socialSecurityExtra?','+detailsForm.socialSecurityExtra:'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="居住福利" style="margin-bottom:10px" >
+                                                {{detailsForm.liveWelfare + (detailsForm.liveWelfareExtra?','+detailsForm.liveWelfareExtra:'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="年假福利" style="margin-bottom:10px" >
+                                                {{detailsForm.annualLeave + (detailsForm.annualLeaveExtra?','+detailsForm.annualLeaveExtra:'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="通讯交通" style="margin-bottom:10px" >
+                                                {{detailsForm.subsidy == '其它'?detailsForm.subsidyExtra:detailsForm.subsidy | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col">职位要求 - 基本要求  </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="年龄要求" style="margin-bottom:10px" >
+                                                {{detailsForm.ageOff + (detailsForm.ageOn?('-' + detailsForm.ageOn):'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="专业要求" style="margin-bottom:10px" >
+                                                {{detailsForm.MajorRequirements | ValueValidFilter}} 
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="工作年限" style="margin-bottom:10px" >
+                                                {{detailsForm.WorkYears | ValueValidFilter}} 
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="学历" style="margin-bottom:10px" >
+                                                {{detailsForm.Degree | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="是否统招全日制" style="margin-bottom:10px" >
+                                                {{detailsForm.FullTime | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="语言要求" style="margin-bottom:10px" >
+                                                {{detailsForm.Language+(detailsForm.Language?','+detailsForm.Language:'') | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="技能要求" style="margin-bottom:10px" >
+                                                {{detailsForm.Skills}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="其它技能" style="margin-bottom:10px" >
+                                                {{detailsForm.SkillsExtra | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col">职位要求 - 职位描述  </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="职位描述" style="margin-bottom:10px" >
+                                                {{detailsForm.JobDescription | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="岗位要求" style="margin-bottom:10px" >
+                                                {{detailsForm.JobRequirements | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                        <div class="col col-12">
+                                            <el-form-item label="补充说明" style="margin-bottom:10px" >
+                                                {{detailsForm.ExtraInfo | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col">其他设置 </div>
+                                    </div>
+                                    <hr class="margin-bottom-10" />
+                                    <div class="row form-group" >
+                                        <div class="col col-12">
+                                            <el-form-item label="上架状态" style="margin-bottom:10px" >
+                                                {{detailsForm.ActiveStatus==1?'上架':'下架' | ValueValidFilter}}
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                </el-form>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- .animated -->
+    
+</div>
+
+<style>
+    .overflow-multiLine{
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+</style>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/jobDelivery/jobDetails.js")"></script>

@@ -1,0 +1,156 @@
+﻿@using MrMatch.Admin.Handler;
+<!DOCTYPE html>
+@{
+    Layout = null;
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>MrMatch Website Management</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="renderer" content="webkit">
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/axios.min.js"></script>
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <link href="~/Content/ElementUI/element-ui.css" rel="stylesheet" />
+    <link href="~/Content/admin/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link href="~/Content/admin/fonts/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/admin/Style/css/AdminLTE.css" rel="stylesheet" />
+    <!-- iCheck -->
+    <link href="~/Content/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+    <!-- jQuery 2.1.4 -->
+    @*<script src="/Content/plugins/jQuery/jQuery-2.1.4.min.js"></script>*@
+    <script src="@Html.GetCssJsUrl("/Js/Configs/ChkUtil.js")"></script>
+
+</head>
+<body class="login-page">
+    <div class="login-box" id="appLogin">
+        <div class="login-logo text-light-blue" style="font-size:30px;">
+            <b class="text-green">MrMatch </b>管理系统
+        </div><!-- /.login-logo -->
+        <div class="login-box-body">
+            <p class="login-box-msg">登录</p>
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" v-model="loginArgs.loginName" placeholder="登录名" />
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                <span style="color:red;font-size:14px;">{{validatorMsg.loginNameMsg}}</span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" v-model="loginArgs.password" placeholder="密码" />
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                <span style="color:red;font-size:14px;">{{validatorMsg.passwordMsg}}</span>
+            </div>
+            <div class="row">
+                <div class="col-xs-8">
+                    @*<a>忘记密码？</a>
+                        <div class="checkbox icheck">
+                            <label>
+                                <input type="checkbox"> 记住账号信息
+                            </label>
+                        </div>*@
+                </div><!-- /.col -->
+                <div class="col-xs-4 ">
+                    <el-button type="submit" v-on:click="login" class="btn btn-primary btn-block btn-flat btn-sm submit">登录</el-button>
+                </div><!-- /.col -->
+            </div>
+            <div class="row">
+                <div class="col-xs-12 confirmModal text-center">
+                </div>
+            </div>
+        </div><!-- /.login-box-body -->
+        <el-dialog title="提示" :visible.sync="dialogVisible" width="18%" :before-close="closeModal">
+            <span>{{result}}</span>
+            <div v-loading="loading" :visible.sycn="loading"></div>
+            <span slot="footer" class="dialog-footer">
+                @*<el-button v-on:click="closeModal">取 消</el-button>*@
+                <el-button type="primary" v-on:click="closeModal">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.login-box -->
+    <!-- Bootstrap 3.3.2 JS -->
+    @*<script src="/Content/admin/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>*@
+    <!-- AdminLTE App -->
+    @*<script src="/Content/plugins/iCheck/icheck.min.js" type="text/javascript"></script>*@
+
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#appLogin",
+            data: {
+                apiUrl: {
+                    passport: "/api/passportapi/",
+                    returnUrl: "/passport/login"
+                },
+                loginArgs: {
+                    loginName: "",
+                    password: "",
+                },
+                validatorMsg: {
+                    loginNameMsg: "",
+                    passwordMsg: ""
+                },
+                result: "",
+                dialogVisible: false,
+                loading: false
+            },
+            methods: {
+                login: function () {
+                    if (!this.formValidate()) {
+                        return false;
+                    }
+
+                    this.dialogVisible = true;
+                    this.loading = true;
+
+                    axios.post(this.apiUrl.passport + 'Login', this.loginArgs)
+                        //{ LoginName: this.loginArgs.loginName, Password: this.loginArgs.password }
+                        .then((res) => {
+                            var json = JSON.parse(res.data);
+                            this.loading = false;
+                            if (json.IsOK) {
+                                this.result = json.Msg;
+                                this.apiUrl.returnUrl = json.ReturnUrl;
+                                var retUrl = ChkUtil.getQueryString("fromurl");
+                                if (retUrl) {
+                                    window.location.href = retUrl;
+                                } else {
+                                    window.location.href = this.apiUrl.returnUrl;
+                                }
+                            } else {
+                                this.result = json.Msg;
+                                this.loginArgs.loginName = "";
+                                this.loginArgs.password = "";
+                            }
+                        });
+                },
+                closeModal: function () {
+                    this.dialogVisible = false;
+                    this.result = "";
+                    window.location.href = this.apiUrl.returnUrl;
+                },
+                formValidate: function () {
+                    var validate = true;
+                    if (this.loginArgs.loginName == "" || this.loginArgs.loginName == null) {
+                        this.validatorMsg.loginNameMsg = "登录名不能为空";
+                        validate = false;
+                    } else {
+                        this.validatorMsg.loginNameMsg = "";
+                        var validate = true;
+                    }
+                    if (this.loginArgs.password == "" || this.loginArgs.password == null) {
+                        this.validatorMsg.passwordMsg = "密码不能为空";
+                        validate = false;
+                    } else {
+                        this.validatorMsg.passwordMsg = "";
+                        var validate = true;
+                    }
+                    return validate;
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>

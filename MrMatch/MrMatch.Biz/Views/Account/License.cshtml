@@ -1,0 +1,186 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "License";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>证书资质</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">证书资质</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appLicense" v-cloak>
+    <div class="animated fadeIn">
+        
+        <div class="ui-typography">
+            <div class="row">
+                <div class="col col-md-12">
+                    
+                    <div class="card">
+                        <div class="card-body card-block" v-if="licenseUrl">
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">营业执照</label></div>
+                                <div class="col col-12 col-md-10">
+                                    <div class="row color-gray small">
+                                        <div style="position:relative;">
+                                            <div class="avatar-uploader">
+                                                <div class="el-upload">
+                                                    <img class="avatar" :src="licenseUrl" alt="">
+                                                </div>
+                                            </div>
+                                            <div style="position:absolute;top:0;left:100%;transform:translateX(30px)">
+                                                <el-button size="small" type="primary" @@click="pictureCardPreview(licenseUrl)">预览</el-button>
+                                            </div>
+                                        </div>
+                                                
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body card-block">
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">更新营业执照</label></div>
+                                <div class="col col-12 col-md-10">
+                                    <div class="row color-gray small">
+                                        <div style="position:relative;">
+                                            <div class="">
+                                                <el-upload
+                                                    class="avatar-uploader" 
+                                                    action="/api/accountapi/UploadLicense"
+                                                    :headers="header"
+                                                    name='imgFile'
+                                                    :limit="1"
+                                                    :before-upload="beforeAvatarUpload">
+
+                                                <img v-if="!imgShow" :src="uploadImg" class="avatar" >
+                                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                                </el-upload>
+                                            </div>
+                                            <div style="position:absolute;top:0;left:100%;transform:translateX(30px)" v-if="!imgShow">
+                                                <el-button class="pull-left" style="float:left"  size="small" type="primary" @@click="pictureCardPreview(uploadImg)">预览</el-button>        
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <button type="button" class="btn btn-info" @@click="uploadLicense" :disabled="loading.submitLoading">
+                                <i :class="'far '+(loading.submitLoading?'el-icon-loading':'fa-dot-circle')"></i> 提交
+                            </button>
+                        </div>
+                    </div>
+
+
+                    @*<div class="card">
+                        <div class="card-header">
+                            <strong class="card-title">证书资质</strong>
+                        </div>
+
+                        <div class="card-body card-block">
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">营业执照</label></div>
+                                <div class="col col-12 col-md-10">
+                                    <div class="row color-gray small">
+                                        <div class="col col-md-8 text-center">
+                                            <el-upload class="avatar-uploader"
+                                                       action="/api/accountapi/UploadLicense"
+                                                       :headers="header"
+                                                       name='imgFile'
+                                                       :limit="1"
+                                                       :show-file-list="false"
+                                                       :before-upload="beforeAvatarUpload">
+                                                <img :src="logo" class="avatar" v-if="imgShow">
+                                                <img :src="uploadImg" class="avatar" v-if="!imgShow">
+                                                <i v-show="!check" class="el-icon-plus avatar-uploader-icon"></i>
+                                                <p v-show="!check" class="update-btn">浏览文件</p>
+                                            </el-upload>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-right">
+                            <button type="button" class="btn btn-info" v-if="!check" @@click="uploadLicense"><i class="far fa-dot-circle"></i> 提交</button>
+                            <button type="button" class="btn btn-info disabled" v-else=""><i class="far fa-dot-circle"></i> 提交</button>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    
+        <el-dialog :visible.sync="dialogVisible" style="margin-top:-10vh">
+            <img style="width:100%;" :src="dialogImageUrl" alt="">
+        </el-dialog>
+    </div>
+</div>
+<style>
+    .avatar-uploader .el-upload {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 198px;
+        height: 198px;
+        line-height: 178px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 198px;
+        height: 198px;
+        display: block;
+    }
+
+    .update-btn {
+        position: absolute;
+        top: 80px;
+        left: 50px;
+        z-index: 10;
+        line-height: 40px;
+        width: 100px;
+        height: 40px;
+        font-size: 18px;
+        font-weight: bold;
+        background: #fff;
+        border-radius: 5px;
+        opacity: .8;
+    }
+</style>
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/license.js")" ></script>

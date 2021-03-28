@@ -1,0 +1,31 @@
+﻿@using MrMatch.CandidateClient.Handler;
+@{
+    Layout = null;
+}
+
+<div id="header" class="header" v-cloak>
+    <div class="container-inner clearfix">
+        <div class="logo">
+            <a href="/resume/index">
+                <img src="~/Assets/images/login_logo.png" style="width:60px;" />
+                <span style="display:none">猫奇</span>
+            </a>
+        </div>
+        <div class="nav"></div>
+        <div class="user-nav">
+            <ul>
+                <li>
+                    <a href="javascript:void(0);" class="header-photo" >
+                        <span>{{nickName}}</span>
+                        <img class="user-avatar rounded-circle" :src="avatarUrl"/>
+                    </a>
+                    <div class="dropdown">
+                        <a class="link-logout" href="javascript:void(0);" @@click="logout"> <i class="fas fa-power-off"></i>退出登录</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="@Html.GetCssJsUrl("/Assets/js/pagecommon/head.js")" ></script>

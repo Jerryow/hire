@@ -1,0 +1,92 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Folder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>收藏夹管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">收藏夹管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="appFolder" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row ">
+            <div class="col col-md-8 ">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">收藏夹管理</strong>
+                    </div>
+                    <div class="card-body" id="FolderList">
+                        @{
+                            foreach (var item in userFolderList)
+                            {
+                                <div class="col col-md-4 folder-block color-gray">
+                                    <a class="btn btn-block btn-default folder-item" onclick="javascript: editThis(this);" data-id="@(item.PKID)" data-name="@(item.FolderName)">@item.FolderName</a>
+                                </div>
+                            }
+                        }
+                    </div> <!-- /.table-stats -->
+                </div>
+
+
+            </div>
+            <div class="col col-md-4 ">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">新增</strong>
+                    </div>
+                    <div class="card-body" style="min-height:94px;">
+                        <div class="form-group" id="FormNew">
+                            <input class="form-control" value="" placeholder="如：互联网运营、HRD..." name="NameNew" id="NameNew" />
+                        </div>
+                        <div id="ResultNew" class="form-group hidden">
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-info " id="FormSubmit"><i class="fas fa-plus-circle"></i> 提交</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">编辑</strong>
+                    </div>
+                    <div class="card-body" style="min-height:94px;">
+                        <div class="form-group" id="FormModify">
+                            <input class="form-control disabled" disabled="disabled" value="" placeholder="选择一个已添加的分类" name="NameEdit" id="NameEdit" />
+                            <input type="hidden" value="" name="FolderID" id="FolderID" />
+                        </div>
+                        <div id="ResultEdit" class="form-group hidden">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-warning pull-left disabled" disabled="disabled" id="FormDel"><i class="fas fa-times-circle"></i> 删除</button>
+                        <button type="button" class="btn btn-info pull-right disabled" disabled="disabled" id="FormEdit"><i class="fas fa-edit"></i> 修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="@Html.GetCssJsUrl("/Assets/Js/candidate/folder.js")" ></script>

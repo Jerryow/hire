@@ -1,0 +1,206 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-address-card"></i> 企业用户
+        <small>用户管理</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-users-cog"></i> 用户管理</li>
+        <li class="active"><i class="fas fa-address-card"></i> 企业用户</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box" id="appCompanyIndex">
+        <div class="box-header">
+            <div class="col-sm-9 no-padding">
+                <div class="dataTables_length ">
+                    <label>
+                        每页显示
+                        <select id="dataTableLen" class="form-control input-sm" v-model="selectSize" @@change="getList">
+                            <option v-for="item in sizes" :value="item">{{item}}</option>
+                        </select>
+                    </label>
+                    <el-button @@click="add('form','add')" type="success" size="small"><i class="fas fa-plus"></i>新增</el-button>
+                </div>
+            </div>
+            <div class="col-sm-3 no-padding">
+                <div class="dataTables_filter pull-right input-group">
+                    <input class="form-control no-margin input-sm" v-model="getArgs.keyWords" @@keyup.enter="getList" type="text" placeholder="搜索..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-flat btn-sm" v-on:click="getList" type="button"><i class="fas fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div><!-- /.box-header -->
+
+        <div class="box-body">
+            <!-- DB : Cfg_CountryInfo -->
+            <template>
+                <el-table :data="tableData"
+                          :row-style="rowClass"
+                          :cell-style="cellClass"
+                          border
+                          style="width:100%;color:black;">
+                    <el-table-column prop="PKID"
+                                     label="序号"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="CompanyName"
+                                     label="企业名称"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="ShortName"
+                                     label="对外显示名称"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="CompnayType"
+                                     label="企业类型"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <p>{{scope.row.CompnayType | typeFormat}}</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="Website"
+                                     label="官网"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="EmployeeNum"
+                                     label="企业规模"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                    </el-table-column>
+                    <el-table-column prop="CheckedStatus"
+                                     label="审核状态"
+                                     width="150px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <el-tag :type="tagType(scope.row.IsChecked)"
+                                    :disable-transitions="false">
+                                <p>{{scope.row.CheckedStatus | isChecked}}</p>
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="CreatedTime"
+                                     label="创建时间"
+                                     width="100px"
+                                     :show-overflow-tooltip="tableRowProp.hiden">
+                        <template slot-scope="scope">
+                            <p>{{scope.row.CreatedTime | formatDate}}</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作"
+                                     fixed="right">
+                        <template slot-scope="scope">
+                            <el-button @@click="updateFill(scope.row.PKID,'update')" type="text" size="medium">编辑</el-button>
+                            <el-dropdown trigger="click">
+                                <span class="el-dropdown-link" style="color:lightslategrey">
+                                    其他操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/branch')" icon="el-icon-plus">分支机构</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/license')" icon="el-icon-circle-plus">企业证书</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/logo')" icon="el-icon-circle-plus-outline">企业Logo</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/contact')" icon="el-icon-check">联系方式</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/jobpublish')" icon="el-icon-circle-check-outline">招聘发布</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/account')" icon="el-icon-circle-check-outline">企业成员</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/company/contract')" icon="el-icon-circle-check-outline">签约</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/job/invite')" icon="el-icon-circle-check-outline">邀约</el-dropdown-item>
+                                    <el-dropdown-item @@click.native="handlerDrop(scope.row.PKID,'/job/interview')" icon="el-icon-circle-check-outline">面试</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+        </div><!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button class="btn btn-default btn-sm" @@click="refresh"><i class="fa fa-refresh"></i> 刷新</button>
+            <el-pagination small layout="prev, pager, next"
+                           @@current-change="handleCurrentChange"
+                           :current-page.sync="pagination.index"
+                           :page-size="parseInt(selectSize)"
+                           :total="pagination.total"
+                           style="float:right;">
+            </el-pagination>
+        </div>
+        <el-dialog :title="dialogArgs.title" :visible.sync="dialogArgs.dialogVisible" :before-close="closeModal" :close-on-press-escape="dialogArgs.diaClose" :close-on-click-modal="dialogArgs.diaClose">
+            <el-form ref="form" :model="form" :label-position="dialogArgs.labelPosition" :rules="rules" label-width="80px;">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="企业名称*" prop="CompanyName">
+                            <el-input v-model="form.CompanyName" placeholder="请输入企业名称(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="企业类型*" prop="CompnayType">
+                            <el-select v-model="form.CompnayType" filterable placeholder="请选择企业类型" style="width:100%">
+                                <el-option v-for="item in companyTypeList" :label="item.Name" :value="item.ID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="官网*" prop="Website">
+                            <el-input v-model="form.Website" placeholder="请输入官网(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="企业规模*" prop="EmployeeNum">
+                            <el-select v-model="form.EmployeeNum" filterable placeholder="请选择企业规模" style="width:100%">
+                                <el-option v-for="item in employeeList" :label="item.Name" :value="item.ID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="地址*" prop="Address">
+                            <el-input v-model="form.Address" placeholder="请输入地址(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="审核是否通过*">
+                            <el-switch v-model="form.IsChecked"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="企业介绍*" prop="Introduce">
+                            <el-input type="textarea" :rows="8" v-model="form.Introduce" placeholder="请输入企业介绍(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @@click="submitForm('form')" v-if="btnShow.addShow">新增</el-button>
+                <el-button type="primary" @@click="updateForm('form')" v-if="btnShow.updateShow">修改</el-button>
+                <el-button @@click="resetForm('form')">重置</el-button>
+            </span>
+        </el-dialog>
+    </div><!-- /.box -->
+</section>
+
+
+<script src="@Html.GetCssJsUrl("/Js/company/Index.js")" >
+</script>

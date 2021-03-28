@@ -1,0 +1,100 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Mr Match 猫奇</title>
+    <meta name="description" content="Mr Match 猫奇先生">
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/browser.min.js"></script>
+    <script src="~/Scripts/browser-polyfill.min.js"></script>
+    <link rel="stylesheet" href="/content/assets/css/normalize.css">
+    <link rel="stylesheet" href="/content/assets/css/bootstrap.min.css">
+    <link href="/Content/fontawesome-free-5.4.1-web/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/content/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="/content/assets/css/style.css">
+    <script src="/content/assets/js/popper.min.js"></script>
+    <script src="/content/assets/js/bootstrap.min.js"></script>
+    <link href="~/Content/ElementUI/element-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <script src="~/Scripts/axios.min.js"></script>
+    <script type="text/javascript">
+         var _ticket = '@MrMatch.Biz.Handler.ActionFilter.CurrID.Tickets';
+    </script>
+</head>
+<body>
+    <div class="sufee-login d-flex align-content-center flex-wrap" id="appComplete" v-cloak>
+        <div class="container">
+            <div class="login-content" style="max-width:720px;">
+                <div class="login-logo">
+                    <h1>Mr. Match</h1>
+                </div>
+                <div class="login-form">
+                    <div class="form-group margin-bottom-30" style="padding-bottom:15px;"><h4 style="margin:0 15px;">信息完善</h4></div>
+
+                    <div class="col col-xs-12 form-group margin-bottom-30">
+                        <label>请输入您的姓名</label>
+                        <input type="text" class="form-control" placeholder="例如：Alex Yang" maxlength="20" v-model="form.AccountName">
+                        <small class="color-gray">* 不要超过20个字符</small>
+                    </div>
+                    <div class="col col-xs-12 form-group margin-bottom-30">
+                        <label>请输入您的职位</label>
+                        <input type="text" class="form-control" placeholder="例如：HR Manager" maxlength="30" v-model="form.Position">
+                        <small class="color-gray">* 不要超过30个字符</small>
+                    </div>
+                    <div class="col col-xs-12 form-group margin-bottom-30">
+                        <label>请输入您的企业性质</label>
+                        <el-select v-model="form.AgentOrNot" placeholder="请选择" style="width:100%;">
+                            <el-option v-for="item in options"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col col-xs-12 form-group margin-bottom-30">
+                        <div>
+                            <label>
+                                {{invitationList != null && invitationList[0] && invitationList[0].CompanyName ? '请选择您的企业注册方式':'请输入您的公司名'}}
+                                <br />
+                                <small v-if="invitationList" class="color-gray">* 已默认选择邀请您的已注册企业，您也可以新创建企业提交</small>
+                            </label>
+                        </div>
+                        <div class="form-group  icheck margin-bottom-30">
+                            <el-radio-group class="row" v-model="form.CompanyID" v-if="invitationList">
+                                <el-radio class="col" style="margin-bottom:20px;margin-top:20px;" name="radios" :label="com.PKID" v-for="com in invitationList" @@change="change"><span style="font-weight:bold;font-size:20px">{{com.CompanyName}}</span></el-radio>
+
+                                <el-radio class="col" name="radios" :label="0" @@change="change">
+                                    <input type="text" v-model="otherCompanyName" placeholder="新建公司名称，提交后不可修改" class="form-control" maxlength="30" style="display:inline-block;min-width:280px;" :disabled="form.CompanyID != 0">
+                                </el-radio>
+                            </el-radio-group>
+                            <div v-else>
+                                <input type="text" v-model="otherCompanyName" placeholder="新建公司名称，提交后不可修改"  class="form-control" style="width:100%;" value="" maxlength="30" >
+                            </div>
+                        </div>
+                        @*<small class="color-gray">* 选择一个向您发起邀请的公司，或新建一个公司信息，不得超过30个字符。</small>*@
+                    </div>
+
+                    <button type="button" class="btn btn-info btn-flat mb-15 " @@click="registCom">提交</button>
+
+                    <div class="row">
+                        <div class="col col-md-12 confirmModal text-center">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="@Html.GetCssJsUrl("/Assets/Js/config.js")"  ></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/complete.js")" ></script>

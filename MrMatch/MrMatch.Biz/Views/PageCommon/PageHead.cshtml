@@ -1,0 +1,105 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    Layout = null;
+}
+
+<header id="header" class="header">
+    <div class="top-left">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/account/index">猫奇 Mr. Match</a>
+            <a class="navbar-brand hidden" href="/account/index">Mr.Match</a>
+            <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+        </div>
+    </div>
+    <div class="top-right" id="appHead" v-cloak>
+        <div class="clearfix">
+            
+            <div class="d-none d-lg-block float-left" style="font-size:12px;padding-top:18px;color:#999">
+                <span>客户成功经理: 杨森华</span>  &nbsp;&nbsp;
+                <span>联系电话: +86-13818163713</span> &nbsp;&nbsp;
+                <span>邮箱：business@mrmatch.net</span> &nbsp;&nbsp;
+            </div>
+            <div class="header-menu">
+                <div class="header-left">
+                    <div class="dropdown for-message">
+                        <a class="btn btn-secondary dropdown-toggle  " href="/Message/Index"  id="message"  title="消息" style="">
+                            <i class="fa fa-envelope" style="font-size:20px;color:#99abb4;"></i>
+                            <span class="count bg-danger " v-if="countShow">{{msgCount}}</span>
+                        </a>
+
+                        @*<button class="btn btn-secondary dropdown-toggle" type="button" id="message" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="消息" >
+                            <i class="fa fa-envelope" style="font-size:20px;"></i>
+                            <span class="count bg-danger ">4</span>
+                        </button>*@
+                            @*<div class="dropdown-menu" aria-labelledby="message">
+                                <p class="red">You have 4 Mails</p>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="~/Content/assets/images/avatar/1.jpg"></span>
+                                    <div class="message media-body">
+                                        <span class="name float-left">Jonathan Smith</span>
+                                        <span class="time float-right">Just now</span>
+                                        <p>Hello, this is an example msg</p>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="~/Content/assets/images/avatar/2.jpg"></span>
+                                    <div class="message media-body">
+                                        <span class="name float-left">Jack Sanders</span>
+                                        <span class="time float-right">5 minutes ago</span>
+                                        <p>Lorem ipsum dolor sit amet, consectetur</p>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="~/Content/assets/images/avatar/3.jpg"></span>
+                                    <div class="message media-body">
+                                        <span class="name float-left">Cheryl Wheeler</span>
+                                        <span class="time float-right">10 minutes ago</span>
+                                        <p>Hello, this is an example msg</p>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="~/Content/assets/images/avatar/4.jpg"></span>
+                                    <div class="message media-body">
+                                        <span class="name float-left">Rachel Santos</span>
+                                        <span class="time float-right">15 minutes ago</span>
+                                        <p>Lorem ipsum dolor sit amet, consectetur</p>
+                                    </div>
+                                </a>
+                            </div>*@
+                    </div>
+                </div>
+
+                <div class="user-area dropdown float-right">
+                    <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <img class="user-avatar rounded-circle" src="~/Content/Avatar_20190329195614.jpg" alt="" style="width:40px;height:40px;" />
+
+                    </a>
+
+                    <div class="user-menu dropdown-menu">
+                        @*<a class="nav-link" href="/account/AccountBasicInfo"> <i class="fas fa-user"></i>个人资料</a>*@
+
+                        @*<a class="nav-link" href="#"><i class="fa fa- user"></i>Notifications <span class="count">13</span></a>
+                            <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>*@
+
+                        <a class="nav-link" href="javascript:void(0);" @@click="logout"> <i class="fas fa-power-off"></i>登出</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</header>
+<style>
+    .header-left .dropdown .dropdown-toggle .count{
+        width:auto;
+        height:15px;
+        line-height:15px;
+        min-width:15px;
+        padding:0 2px;
+        font-size:12px;
+        box-sizing:border-box;
+    }
+</style>
+<script src="@Html.GetCssJsUrl("/Assets/Js/pagecommon/head.js")"></script>

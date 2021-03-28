@@ -1,0 +1,597 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Publish";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>发布职位</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>Job Board</li>
+                            <li class="active">发布职位</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="appPublish" v-cloak>
+    <div class="animated fadeIn">
+
+        <div class="row" ref="publishContent">
+            <div class="col-md-12">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" label-position="left" class="publish-form">
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>企业基本信息</strong>
+                        </div>
+                        <div class="card-body ">
+                            <div class="row form-group" v-if="basicData.agent">
+                                @*<div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司全称</label></div>*@
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="公司全称" prop="JobCompanyID">
+                                        <el-select v-model="ruleForm.JobCompanyID" placeholder="请选择" @@change="selChange(ruleForm.JobCompanyID)" filterable style="width:100%;">
+                                            <el-option v-for="(item,index) in basicData.agentCompany"
+                                                       :key="index"
+                                                       :label="item.Name"
+                                                       :value="item._ID"
+                                                       :agent="item.Agent">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                                <div class="col col-12 col-md-6">
+                                    <div class="btn btn-outline-info" @@click="editCompanyDialog = true">+ 新增企业</div>
+                                </div>
+                            </div>
+                            <div class="row form-group" v-if="basicData.agent">
+                                @*<div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司全称</label></div>*@
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="对外显示名称" prop="JobCompanyID" style="margin:0;">
+                                        <el-input v-model="ruleForm.agentShortName" :disabled="true" type="text" placeholder="对外显示名称"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row form-group" v-if="!basicData.agent">
+                                @*<div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司全称</label></div>*@
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="公司全称" prop="basicName" style="margin:0;">
+                                        <el-input v-model="ruleForm.basicName" :disabled="true" type="text" placeholder="公司全称"></el-input>
+                                    </el-form-item>
+                                </div>
+                                @*<div class="col col-12 col-md-6">
+                                    <div class="btn btn-outline-info">+ 新增企业</div>
+                                </div>*@
+                            </div>
+                            <div class="row form-group" v-if="!basicData.agent">
+                                @*<div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司全称</label></div>*@
+                                <div class="col col-12 col-md-6">
+                                    <el-form-item label="对外显示名称" prop="basicName" style="margin:0;">
+                                        <el-input v-model="ruleForm.basicShortName" :disabled="true" type="text" placeholder="对外显示名称"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>职位基本信息</strong>
+                        </div>
+                        <div class="card-body ">
+                            <div class="row form-group">
+                                <div class="col"><strong>基本信息</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="职位名称" prop="JobName">
+                                        <el-input v-model="ruleForm.JobName" type="text" placeholder="职位名称"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6  ">
+                                    <el-form-item label="职能" prop="funcListDefault">
+                                        <el-cascader ref="jobCascader"
+                                                     :options="basicData.funcList"
+                                                     v-model="ruleForm.funcListDefault"
+                                                     placeholder="职能"
+                                                     id="jobCascader"
+                                                     @@change="jobChang"
+                                                     style="width:100%;"
+                                                     clearable>
+                                        </el-cascader>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="工作地点" prop="distListDefault">
+                                        <el-cascader ref="jobCascader"
+                                                     :options="basicData.districtList"
+                                                     v-model="ruleForm.distListDefault"
+                                                     :props="{value:'PKID',label:'DistrictName',children:'Children'}"
+                                                     placeholder="地点"
+                                                     id="jobCascader"
+                                                     style="width:100%;"
+                                                     clearable>
+                                        </el-cascader>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="汇报对象">
+                                        <el-input v-model="ruleForm.Reporter" type="text" placeholder="汇报对象"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-30">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="下属人数">
+                                        <el-input v-model="ruleForm.SubordinateCount" type="text" placeholder="下属人数"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+
+
+                            <div class="row form-group ">
+                                <div class="col"><strong>薪资福利</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6  ">
+                                    <el-form-item label="税前年薪" required>
+                                        <el-col :span="10">
+                                            <el-form-item prop="salaryOff">
+                                                <el-input v-model="ruleForm.salaryOff" placeholder="下限" style="width: 100%;"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col class="line" :span="2">-</el-col>
+                                        <el-col :span="10">
+                                            <el-form-item prop="salaryOn">
+                                                <el-input v-model="ruleForm.salaryOn" placeholder="上限" style="width: 100%;"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col class="line" :span="2">k</el-col>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12  ">
+                                    <el-form-item label="是否对外显示" prop="salaryOpen">
+                                        <el-radio-group v-model="ruleForm.salaryOpen">
+                                            <el-radio :label="true">公开</el-radio>
+                                            <el-radio :label="false">不公开</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12  ">
+                                    <el-form-item label="薪资构成">
+                                        <el-checkbox-group v-model="composition.salaryComposition">
+                                            <el-checkbox label="基本薪资"></el-checkbox>
+                                            <el-checkbox label="奖金/提成"></el-checkbox>
+                                            <el-checkbox label="期权"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <checkbox-other name="salaryComposition" :value="composition.salaryCompositionExtra" @@change="switchOtherChange" ></checkbox-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-10">
+                                <div class="col col-12 ">
+                                    <el-form-item label="社保福利">
+                                        <el-checkbox-group v-model="composition.socialSecurity">
+                                            <el-checkbox label="国家标准"></el-checkbox>
+                                            <el-checkbox label="商业保险"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <checkbox-other name="socialSecurity" :value="composition.socialSecurityExtra"  @@change="switchOtherChange"></checkbox-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-10">
+                                <div class="col col-12 ">
+                                    <el-form-item label="居住福利">
+                                        <el-checkbox-group v-model="composition.liveWelfare">
+                                            <el-checkbox label="住房补贴"></el-checkbox>
+                                            <el-checkbox label="公司安排"></el-checkbox>
+                                            <el-checkbox label="公积金"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <checkbox-other name="liveWelfare" :value="composition.liveWelfareExtra" @@change="switchOtherChange"></checkbox-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-10">
+                                <div class="col col-12 ">
+                                    <el-form-item label="年假福利">
+                                        <el-checkbox-group v-model="composition.annualLeave">
+                                            <el-checkbox label="国家标准"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <checkbox-other name="annualLeave" :value="composition.annualLeaveExtra" @@change="switchOtherChange"></checkbox-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-30">
+                                <div class="col col-12 ">
+                                    <el-form-item label="通讯交通">
+                                        <el-radio-group v-model="composition.subsidy">
+                                            <el-radio label="不确定">不确定</el-radio>
+                                            <el-radio label="无补助">无补助</el-radio>
+                                            <el-radio label="有补助">有补助</el-radio>
+                                            <el-radio label="实时报销">实时报销</el-radio>
+                                        </el-radio-group>
+                                        <radio-other name="subsidy" :label="composition.subsidy" :value="composition.subsidyExtra" @@change="switchOtherChange"></radio-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>职位要求</strong>
+                        </div>
+                        <div class="card-body ">
+                            <div class="row form-group ">
+                                <div class="col"><strong>基本要求</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="年龄要求">
+                                        <el-col :span="10">
+                                            <el-form-item>
+                                                <el-input v-model="ruleForm.ageOff" placeholder="下限" style="width: 100%;"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col class="line" :span="2">-</el-col>
+                                        <el-col :span="10">
+                                            <el-form-item>
+                                                <el-input v-model="ruleForm.ageOn" placeholder="上限" style="width: 100%;"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="专业要求">
+                                        <el-input v-model="ruleForm.MajorRequirements" type="text" placeholder="专业要求"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="工作年限" prop="WorkYears">
+                                        <el-input v-model="ruleForm.WorkYears" type="text" placeholder="工作年限">
+                                            <template slot="append">
+                                                年以上
+                                            </template>
+                                        </el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-6 ">
+                                    <el-form-item label="学历" prop="Degree">
+                                        <el-select v-model="ruleForm.Degree" placeholder="请选择" style="width:100%">
+                                            <el-option v-for="item in educationType"
+                                                       :key="item.value"
+                                                       :label="item.label"
+                                                       :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-10">
+                                <div class="col col-12 ">
+                                    <el-form-item label="是否统招全日制">
+                                        <el-radio-group v-model="composition.FullTime">
+                                            <el-radio :label="true">是</el-radio>
+                                            <el-radio :label="false">否</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row  margin-bottom-10">
+                                <div class="col col-12 ">
+                                    <el-form-item label="语言要求">
+                                        <el-checkbox-group v-model="composition.Language">
+                                            <el-checkbox label="英语"></el-checkbox>
+                                            <el-checkbox label="日语"></el-checkbox>
+                                            <el-checkbox label="法语"></el-checkbox>
+                                            <el-checkbox label="普通话"></el-checkbox>
+                                            <el-checkbox label="粤语"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <checkbox-other name="Language" :value="composition.LanguageExtra" @@change="switchOtherChange"></checkbox-other>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-12">
+                                    <el-form-item label="技能要求">
+                                        <div class="skillsList">
+                                            <div :class="'skillsList-tag '" v-for="(item,i) in skillsSelectedList" :key="item.id" @@click="skillsListTagSelect(item,i)">
+                                                {{item.SkillName}}
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-info" @@click="addSkillsListTag">+</button>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-30">
+                                <div class="col col-12 col-md-8 ">
+                                    <el-form-item label="其它技能">
+                                        <el-input type="textarea"
+                                                  :autosize="{ minRows: 4, maxRows: 10}"
+                                                  resize="none"
+                                                  placeholder="其它技能"
+                                                  v-model="composition.SkillsExtra"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+
+
+                            <div class="row form-group ">
+                                <div class="col"><strong>职位描述</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="职位描述" prop="JobDescription">
+                                        <el-input type="textarea"
+                                                  :autosize="{ minRows: 6, maxRows: 10}"
+                                                  resize="none"
+                                                  placeholder="请输入内容"
+                                                  v-model="ruleForm.JobDescription"></el-input>
+                                        <p style="margin:10px 0 0 0;"><small>注：职位描述中请勿填写涉及性别歧视的内容，例如：女性优先，只招男士等</small></p>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="岗位要求" prop="JobRequirements">
+                                        <el-input type="textarea"
+                                                  :autosize="{ minRows: 6, maxRows: 10}"
+                                                  resize="none"
+                                                  placeholder="请输入内容"
+                                                  v-model="ruleForm.JobRequirements"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="补充说明">
+                                        <el-input type="textarea"
+                                                  :autosize="{ minRows: 6, maxRows: 10}"
+                                                  resize="none"
+                                                  placeholder="请输入内容"
+                                                  v-model="composition.ExtraInfo"></el-input>
+                                    </el-form-item>
+                                </div>
+                            </div>
+
+
+                            <div class="row form-group ">
+                                <div class="col"><strong>个人信息展示</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-form-item label="展示个人信息">
+                                        <el-radio v-model="form.ShowPersonal" :label="true">展示</el-radio>
+                                        <el-radio v-model="form.ShowPersonal" :label="false">不展示</el-radio>
+                                    </el-form-item>
+                                </div>
+                            </div>
+
+                            <div class="row form-group ">
+                                <div class="col"><strong>请选择要展示的信息</strong>   </div>
+                            </div>
+                            <hr class="margin-bottom-30" />
+
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.phone" :disabled="!form.ShowPersonal">联系电话:</el-checkbox>
+                                    <label>{{accountInfo.phone}}</label>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.wechat" :disabled="!form.ShowPersonal">微信号:</el-checkbox>
+                                    <label>{{accountInfo.wechat}}</label>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.wechatpic" :disabled="!form.ShowPersonal">微信二维码:</el-checkbox>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.linkin" :disabled="!form.ShowPersonal">领英链接:</el-checkbox>
+                                    <label>{{accountInfo.linkin}}</label>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.focus" :disabled="!form.ShowPersonal">专注领域:</el-checkbox>
+                                    <label>{{accountInfo.focus}}</label>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-10">
+                                <div class="col col-12 col-md-8">
+                                    <el-checkbox v-model="checkList.introduction" :disabled="!form.ShowPersonal">个人介绍:</el-checkbox>
+                                    <label>{{accountInfo.introduction}}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>其他设置</strong>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="row ">
+                                <div class="col col-12 col-md-5">
+                                    <el-form-item label="上架状态">
+                                        <el-radio-group v-model="composition.ActiveStatus">
+                                            <el-radio :label="1">上架</el-radio>
+                                            <el-radio :label="0">下架</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                </div>
+                                <div class="col col-12 col-md-5  form-control-label">
+                                    <small>上架后，其他个人用户可查看到您上架的职位</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-form>
+            </div>
+        </div>
+        <el-dialog title="技能要求"
+                   :visible.sync="skillsDialogVisible"
+                   width="650px">
+            <div class="" >
+                <div class="clearfix" style="margin:-15px 0;margin-bottom:20px;">
+                    <div class="float-left"> 热门技能要求 </div>
+                </div>
+                <div class="">
+                    <div class="skillsList" v-if="skillsList.length>0">
+                        <div :class="'skillsList-tag ' + (item.Selected?'selected':'')" v-for="(item,i) in skillsList" :key="item.id" @@click="skillsListTagSelect(item,i)">
+                            <div>
+                                {{item.SkillName}}
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="text-center">
+                            暂无技能标签.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                @*<el-button @@click="skillsDialogVisible = false">取 消</el-button>*@
+                <el-button type="primary" @@click="skillsDialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        
+        <div class="row publishBar " ref="publishBar" >
+            <div class="col-md-12">
+                <div class="card fixed" ref="publishBarCard"  >
+                    <div class="card-body card-block">
+                        <button type="button" class="btn btn-info" @@click="submitForm('ruleForm','publish')"> {{form.PKID == 0?'创建职位':'修改职位'}}</button>
+                        <button type="button" class="btn btn-outline-info" @@click="submitForm('ruleForm','draft')"> 保存为草稿</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- .animated -->
+    
+    <edit-company-dialog :option="editCompanyData" :visible="editCompanyDialog" @@hide="editCompanyDialog = false" @@result="saveJobCompany"></edit-company-dialog>
+</div>
+
+<style>
+    
+    .small-device .publishBar .card.fixed ,
+    .open .publishBar .card.fixed  {
+        left:85px;
+    }
+    @@media (max-width: 768px) {
+        .small-device .publishBar .card.fixed  {
+            left: 0;
+        }
+    }
+    .publishBar .card{
+        transition:.3s;
+    }
+    .publishBar .card.fixed {
+        position:fixed;
+        bottom:0;
+        left:180px;
+        z-index:99;
+        width:100vw;
+        margin:0;
+        background: rgba(255,255,255,0.8);
+    }
+
+    .switch-other{
+        position:relative;
+    }
+    .switch-other .switch-other--text{
+        position:absolute;
+        top:0;
+        left:20px;
+    }
+    label{
+        margin-bottom:0;
+    }
+    .publish-form .line{
+        text-align:center;
+    }
+    .el-checkbox-group,
+    .el-radio-group{
+        display:inline-block;
+        line-height:40px;
+    }
+    .el-checkbox-group,
+    .el-radio-group{
+        margin-right:30px;
+    }
+    .el-radio-group{
+        vertical-align:baseline;
+    }
+    /*.el-radio-group .switch-other .switch-other--text{
+        top:-12px;
+    }*/
+    
+    .skillsList{
+        font-size:0;
+    }
+    .skillsList-tag{
+        border:1px solid #ededed;
+        padding: 6px 15px;
+        display:inline-block;
+        font-size:14px;
+        margin-right:10px;
+        margin-top:4px;
+        margin-bottom:10px;
+        cursor:pointer;
+        line-height: initial;
+        transition:.3s;
+    }
+    .skillsList-tag:hover,
+    .skillsList-tag.selected{
+        background:#e5eefe;
+    }
+</style>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/pagecommon/dialogs/editCompanyDialog.js")" ></script>
+<script src="@Html.GetCssJsUrl("/Assets/Js/jobDelivery/publish.js")" ></script>

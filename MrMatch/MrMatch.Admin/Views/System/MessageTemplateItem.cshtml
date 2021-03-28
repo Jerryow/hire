@@ -1,0 +1,62 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "MessageTemplateItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-hand-pointer"></i> 消息模板
+        <small>系统数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-handshake"></i> 系统数据</li>
+        <li class="active"><i class="fas fa-hand-pointer"></i> 消息模板</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box" id="appMsgConfigItem">
+        <div class="box-body">
+            <el-form ref="aupdateForm" :model="aupdateForm" :label-position="labelPosition" :rules="rules" class="demo-form-inline">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="模板标题*" prop="TemplateTitle">
+                            <el-input v-model="aupdateForm.TemplateTitle" placeholder="请输入模板标题名(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="模板编码*" prop="TemplateCode">
+                            <el-input v-model="aupdateForm.TemplateCode" placeholder="请输入模板编码(必填)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="模板内容*" prop="TemplateContent">
+                            <el-input type="textarea" :rows="10" placeholder="请输入内容" v-model="aupdateForm.TemplateContent"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="aupdateForm.IsActivated"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+            <span slot="footer" class="dialog-footer">
+                @*<el-button type="primary" @@click="submitForm('form')">提交</el-button>*@
+                <el-button type="primary" @@click="submitForm('aupdateForm')">提交</el-button>
+                <el-button @@click="redirect">返回</el-button>
+            </span>
+        </div>
+    </div>
+</section>
+
+
+<script src="@Html.GetCssJsUrl("/Js/system/MessageTemplateItem.js")">
+</script>

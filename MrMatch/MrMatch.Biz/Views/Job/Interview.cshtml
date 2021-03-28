@@ -1,0 +1,198 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Interview";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>流程管理</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>消息</li>
+                            <li class="active">流程管理</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appInterview" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col col-md-9 candidate-list">
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row color-gray" style="font-size:14px; line-height:2;">
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class="">
+                                    全部已接受邀约：<a href="javascript:void(0);" @@click="setStatus(0)" class="text-light-blue">{{interviewCount.all}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class="text-200">
+                                    待电话沟通：<a href="javascript:void(0);" @@click="setStatus(200)" class="text-light-blue">{{interviewCount.waitCommunicate}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class="text-210">
+                                    待面试：<a href="javascript:void(0);" @@click="setStatus(210)" class="text-light-blue">{{interviewCount.waitInterview}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class=" text-220">
+                                    已面试：<a href="javascript:void(0);" @@click="setStatus(220)" class="text-light-blue">{{interviewCount.isInterview}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class=" text-230">
+                                    已录用：<a href="javascript:void(0);" @@click="setStatus(230)" class="text-light-blue">{{interviewCount.getOffer}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class=" text-110">
+                                    我拒绝的候选人：<a href="javascript:void(0);" @@click="setStatus(110)" class="text-light-blue">{{interviewCount.refuse}}</a>
+                                </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-12 col-sm-12 no-padding">
+                                <div class=" text-100">
+                                    候选人谢绝邀约：<a href="javascript:void(0);" @@click="setStatus(100)" class="text-light-blue">{{interviewCount.isRefuse}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card candidate-card" v-for="(item,i) in interviewInfoList" v-if="interviewInfoList">
+                    <div class="card-header">
+                        <strong class="card-title"> {{item.ProfileInfo.RealName}} </strong>
+
+                        <span class="badge badge-info" v-if="computePutTime(item.ProfileInfo.LastModifiedTime)">本周发布</span>
+
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.ProfileInfo.JobIntention.AnnualSalary">
+                            <label class="color-gray">期望年薪：</label> {{(item.ProfileInfo.JobIntention.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.ProfileInfo.AnnualSalary">
+                            <label class="color-gray">当前年薪：</label> {{(item.ProfileInfo.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;">
+                            <label class="color-gray">所在城市：</label> {{item.ProfileInfo.Residence}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-2">
+                                <div class="avatar text-center">
+                                    <img v-if="item.ProfileInfo.AvatarUrl" :src="item.ProfileInfo.AvatarUrl" style="margin:0 auto;" />
+                                    <img v-else src="~/Content/assets/images/avatar/avatar2.png" style="margin:0 auto;" />
+                                </div>
+                            </div>
+                            <div class="col col-10 ">
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>
+                                    <span class="padding-5">主要学历： {{item.ProfileInfo.EducationList[0].SchoolName}}，{{item.ProfileInfo.EducationList[0].Degree}}，{{item.ProfileInfo.EducationList[0].MajorSubject}}</span>
+
+                                </div>
+                                <div class="col col-12"><i class="fas fa-briefcase color-gray-light"></i> {{item.ProfileInfo.WorkExperienceList != null ? item.ProfileInfo.WorkExperienceList.length : "0"}} 职位，{{item.ProfileInfo.WorkYears}} 年</div>
+                                <div class="col col-12 no-padding">
+                                    <ul :ref="'workList'+i" class="timeline" v-if="item.ProfileInfo.WorkExperienceList">
+                                        <!-- timeline item -->
+                                        <li :class="j<2?'':'hidden'" v-for="(option, j) in item.ProfileInfo.WorkExperienceList">
+                                            <!-- timeline icon -->
+                                            <i class="far fa-circle"></i>
+                                            <div class="timeline-item">
+                                                <span class="text-black">{{option.Position}}</span>
+                                                <span>{{option.CompanyName}}</span>
+                                                @*<span>{{formatTime(option.StartDate, option.ExpirationDate)}}</span>*@
+                                                <span>{{option.StartDate|dateFormat1}} - {{option.ExpirationDate|monthFormat}}</span>
+                                            </div>
+                                        </li>
+                                        <!-- END timeline item -->
+                                    </ul>
+                                    <button :ref="'workListBtn'+i" class="btn btn-sm btn-outline-default " v-if="true" style="margin-left:10px; " @@click="workListToggle(i)"><i class="fas fa-angle-double-down color-gray-light un-width"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer " style="border-top:1px #ddd solid;">
+
+                        @*<div class="direct-chat-messages" style="height:unset;">
+                                 Message. Default to the left
+                                <div class="direct-chat-msg">
+                                    <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-left">{{accountName}}</span>
+                                        <span class="direct-chat-timestamp pull-right">{{item.InviteInfo.CreatedTime|dateFormat}}</span>
+                                    </div>
+                                     /.direct-chat-info
+                                    <div class="direct-chat-img">
+                                        <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                    </div>
+                                     /.direct-chat-img
+                                    <div class="direct-chat-text ">
+                                        <pre>{{item.InviteInfo.InviteLetter}}</pre>
+                                    </div>
+                                     /.direct-chat-text
+                                </div>
+                                 /.direct-chat-msg
+                            </div>*@
+
+                        <div class="pull-right color-gray small ">
+                            <a class="btn btn-sm btn-info" :href="'/candidate/item?code='+item.ProfileInfo.UniCode" target="_blank"><i class="fa fa-file-alt"></i> 查看候选人简历</a>
+                        </div>
+                        <div class="pull-right color-gray small mr-15">
+                            <a class="btn btn-sm btn-success" :href="'/job/interviewitem?id='+item.PKID" target="_blank"><i class="fa fa-file-alt"></i> 查看候选人电话</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body text-center">
+                        <el-pagination @@current-change="currentChange"
+                                       layout="prev, pager, next"
+                                       :page-size="form.pageSize"
+                                       :current-page="form.pageIndex"
+                                       :total="form.total">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-md-3">
+                <div class="card calling-card">
+                    <div class="card-body ">
+                        <div class="calling-head">需要帮助？</div>
+                        <div class="calling-title">
+                            杨森华
+                            <small>客户成功经理</small>
+                        </div>
+                        <div class="calling-content">
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">联系电话：</div>
+                                <div class="calling-val">+86-13818163713</div>
+                            </div>
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">邮箱：</div>
+                                <div class="calling-val">business@mrmatch.net</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script src="@Html.GetCssJsUrl("/Assets/Js/job/interview.js")" ></script>

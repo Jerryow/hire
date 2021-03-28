@@ -1,0 +1,251 @@
+﻿@using MrMatch.CandidateClient.Handler;
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Mr Match 猫奇</title>
+    <meta name="description" content="Mr Match 猫奇先生">
+
+    <!--[if It IE 9]> 
+        <script>
+        document.getElementsByTagName('body')[0].style.display = 'none'
+        window.onload = function(){
+          document.getElementsByTagName('body')[0].innerHTML = '<div style="text-align:center;margin-top:50px;font-size:20px;"><img src="/Assets/images/ie.png" /><p>你的IE浏览器版本过低，请升级至IE10以上版本或更换浏览器</p></div>'
+          document.getElementsByTagName('body')[0].style.display = 'block'
+        }
+    </script>
+    <![endif]-->
+    
+    <script>
+        var _ticket = '';
+    </script>
+
+    <script src="~/Scripts/browser.min.js"></script>
+    <script src="~/Scripts/browser-polyfill.min.js"></script>
+
+    <link href="~/Assets/ui-tmpl/ElementUI/element-ui.css" rel="stylesheet" />
+    <link href="@Html.GetCssJsUrl("/Assets/css/common.css")" rel="stylesheet" />
+    <link href="@Html.GetCssJsUrl("/Assets/css/pages/login.css")"  rel="stylesheet" />
+
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+    @*<script src="https://unpkg.com/element-ui/lib/index.js"></script>*@
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <script src="~/Scripts/axios.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        .main-fluid {
+            width: 100%;
+            min-width: 1260px;
+        }
+        .main{
+            width:1260px;
+            margin:0 auto;
+        }
+        .header {
+            width: 100%;
+            height: 80px;
+            line-height: 80px;
+            background: #86e3b0;
+            position: relative;
+            z-index: 10;
+            /*overflow:hidden;*/
+        }
+
+        .header .logo {
+            width: 90px;
+            height: 62px;
+            background: url(/Assets/images/logo.png) no-repeat;
+            background-size: 100%;
+            background-position: center;
+        }
+
+        .header .nav-bar > div {
+            float: left;
+            height: inherit;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            background: #86e3b0;
+            transition: .3s ease-in-out;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .header .nav-bar > div a {
+            color: #fff;
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 0 36px;
+        }
+
+        .header .nav-bar > div ul {
+            height: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: 10;
+            left: 0;
+            top: 80px;
+            width: 155px;
+            background: white;
+            box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.08);
+            transition: .3s ease-in-out;
+        }
+
+            .header .nav-bar > div ul li {
+                width: 100%;
+                font-size: 16px;
+                box-sizing: border-box;
+                height: 62px;
+                line-height: 62px;
+                border-top: 1px solid #efefef;
+            }
+
+                .header .nav-bar > div ul li a {
+                    color: #333;
+                    text-align: left;
+                }
+
+                .header .nav-bar > div ul li:first-child {
+                    border-top: 0;
+                }
+
+                .header .nav-bar > div ul li:hover {
+                    background: #f7f7f7;
+                    background: rgba(0,0,0,.05);
+                    transition: .3s;
+                }
+
+        .header .nav-bar > div.active, .header .nav-bar > div:hover {
+            background: #333333;
+        }
+
+            .header .nav-bar > div.active ul, .header .nav-bar > div:hover ul {
+                display: block;
+                height: auto;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="sufee-login d-flex align-content-center flex-wrap" id="appLogin" v-cloak>
+        <div class="login main-fluid">
+            <div class="main-fluid header">
+                <div class="clearfix main">
+                    <div class="pull-left">
+                        <div class="logo"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="login-bg ">
+                <div class="login-card login-box">
+                    <div class="card-box">
+                        <div>
+                            <img class="logo" src="~/Assets/images/login_logo.png" />
+                        </div>
+                        <div class="tagline">
+                            <div>精挑细选的人才市场</div>
+                        </div>
+                        <div v-show="!isQRCodeLogin">
+                            <div class="hint"><i class="el-icon-warning-outline" v-if="hint&&hint.length>0"></i>&nbsp;{{hint}}</div>
+                            <div>
+                                <div class="input-box input-line">
+                                    <div style="padding-left: 60px;">
+                                        <div class="input-left">
+                                            <div>+86</div>
+                                        </div>
+                                        <div style="display: inline-block;">
+                                            <input type="text" name="username" id="username" placeholder="请输入手机号码" v-model="username" @@inputHandle="usernameChange" data-name="username" style="width:320;"><!---->
+                                        </div><!---->
+                                    </div>
+                                </div>
+                                <div class="input-box input-line">
+                                    <div style="padding-right: 150px;">
+                                        <!---->
+                                        <div style="display: inline-block;">
+                                            <input type="text" name="verifycode" id="verifycode" v-model="verifycode" placeholder="验证码" data-name="getImage" @@keyup.enter="loginSubmit" style="width: 250px;"><!---->
+                                        </div><div class="input-right">
+                                            <div ref="setCode" :class="'color-primary send-code '+ (isSending?'disabled':'')" @@click="getImage">{{isSending?timer+'s':'获取短信验证码'}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="f14 text-gray">
+                                <div style="display: inline-block;vertical-align: middle;">
+                                    <div class="slide-checkbox">
+                                        <input type="checkbox" name="agreement" id="agreement" value="agreement" @@change="checkboxClickAgreement">
+                                        <label for="agreement">
+                                            <div class="slide-checkbox-i"></div>
+                                            同意
+                                            <a class="color-primary pointer" href="https://www.mrmatch.net/talent_protocol.html" target="_black">猫奇使用协议</a>、
+                                            <a class="color-primary pointer" href="https://www.mrmatch.net/privacy_policy.html" target="_black">隐私政策</a>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin: 20px 0px 10px;">
+                                <button class="btn btn-primary btn-login" @@click="loginSubmit" :disabled="loginLoading"><i v-if="loginLoading" class="el-icon-loading"></i> 登录/注册 </button>
+                            </div>
+                            <div class="clearfix">
+                                <div class="pull-left">
+                                    <div style="display: inline-block;">
+                                        <!---->
+                                        <div class="slide-checkbox">
+                                            <input type="checkbox" name="autologin" id="autologin" value="autologin" @@change="checkboxClick">
+                                            <label for="autologin">
+                                                <div class="slide-checkbox-i">
+                                                </div> 下次自动登录
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pull-right pointer f14 color-primary" @@click="unReceiveCode">收不到验证码</div>
+                            </div>
+                            <div class="pull-right pointer f14 color-primary" @@click="QRCodeLogin" style="user-select:none;">二维码登录</div>
+                        </div>
+                        <div v-if="isQRCodeLogin">
+                            <div class="login-form" style="padding:17px ;">
+                                <div class="row margin-bottom-30 ">
+                                    <div class="col col-md-12  text-center">
+                                        <div class="" id="QRCode" style="width:165px; height:165px; border:3px #ddd solid; padding:15px; margin:0 auto;">
+                                            <i class="el-icon-loading" style="font-size:32px; line-height:165px; color:#999;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @*<button class="btn btn-sm" onclick="javascript: toSend();">Send</button>*@
+                                    <div class="col col-md-12 confirmModal text-center" id="ErrorLog" style="margin-top:20px;font-size:14px;">
+                                        请使用 【猫奇小程序】<br /> 扫描以上二维码登录
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr pointer f14 text-primary" @@click="QRCodeLogin" style="user-select:none;">账号密码登录</div>
+                        </div>
+                        @*<div class="er-box">
+                                <div @@click="QRCodeLogin" class="link link-primary" >
+                                    二维码登录
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <link href="@Html.GetCssJsUrl("/Scripts/img_ver/style.css")" rel="stylesheet" />
+    <script src="@Html.GetCssJsUrl("/Scripts/Config/ChkUtil.js")" type="text/babel"></script>
+    <script src="@Html.GetCssJsUrl("/Scripts/img_ver/img_ver.js")" type="text/babel"></script>
+    <script src="@Html.GetCssJsUrl("/Assets/js/config.js")"></script>
+    <script src="@Html.GetCssJsUrl("/Assets/js/passport/login.js")"></script>
+</body>
+</html>

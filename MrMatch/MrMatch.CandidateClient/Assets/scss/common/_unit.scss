@@ -1,0 +1,100 @@
+﻿@import "../_variable.scss";
+
+.btn {
+    margin: 0;
+    padding: 9px 15px;
+    line-height: 1;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #e3e7ed;
+    color: #414a60;
+    vertical-align: middle;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 4px;
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    transition: background-color .1s linear,box-shadow .1s linear;
+    outline: none;
+    user-select: none;
+}
+
+.btn-primary,
+.btn-primary:hover {
+    background-color: $color-primary;
+    border-color: $color-primary;
+    color: #fff;
+}
+.btn-outline {
+    background-color: #fff;
+}
+
+
+.text-wrap {
+    height: 40px;
+    line-height: 20px;
+    overflow: hidden
+}
+
+.text-wrap .text {
+    float: right;
+    margin-left: -5px;
+    width: 100%;
+    word-break: break-all
+}
+
+.text-wrap:before {
+    float: left;
+    width: 5px;
+    content: "";
+    height: 40px
+}
+
+.text-wrap:after {
+    float: right;
+    content: "...";
+    height: 20px;
+    line-height: 20px;
+    width: 3em;
+    margin-left: -3em;
+    position: relative;
+    left: 100%;
+    top: -20px;
+    padding-right: 5px
+}
+
+.textarea-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    min-height: 20px;
+    width: 100%;
+}
+
+.textarea-wrapper .textarea-content {
+    display: block;
+    visibility: hidden;
+    font-size: 12px;
+    color: #333333;
+    line-height: 1.2;
+    word-wrap: break-word;
+    font-family: SourceHanSansCN-Regular;
+    padding: 0;
+}
+
+.textarea-wrapper textarea {
+    overflow: hidden;
+    resize: none;
+    width: 100%;
+    height: 100%;
+    font-family: SourceHanSansCN-Regular;
+    border: 0;
+    font-size: 12px;
+    color: #333333;
+    line-height: 1.2;
+    padding: 0px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}

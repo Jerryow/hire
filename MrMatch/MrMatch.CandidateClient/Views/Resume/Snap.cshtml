@@ -1,0 +1,174 @@
+﻿@using MrMatch.CandidateClient.Handler;
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>简历快照-Mr. Match 猫奇先生</title>
+    <meta name="description" content="Mr. Match">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script type="text/javascript">
+         var _ticket = '@MrMatch.CandidateClient.Handler.ActionFilters.CurrID.Tickets';
+    </script>
+    <style>
+        #ErrText {
+            font-size: larger;
+            font-weight: 600;
+            color: green;
+        }
+
+        img {
+            height: auto;
+        }
+
+        .content.no-padding {
+            float: none;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <link href="~/Assets/ui-tmpl/ElementUI/element-ui.css" rel="stylesheet" />
+
+    <link href="@Html.GetCssJsUrl("/Assets/css/common.css")" rel="stylesheet" />
+    <link href="@Html.GetCssJsUrl("/Assets/css/pages/resume.css")" rel="stylesheet" />
+
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+    @*<script src="https://unpkg.com/element-ui/lib/index.js"></script>*@
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <script src="~/Scripts/bluebird.min.js"></script>
+    <script src="~/Scripts/axios.js"></script>
+    @*<script src="~/Scripts/storage.js"></script>*@
+    
+    <script src="@Html.GetCssJsUrl("/Scripts/Config/ChkUtil.js")"></script>
+    <script src="@Html.GetCssJsUrl("/Assets/js/config.js")"></script>
+    <script src="@Html.GetCssJsUrl("/Assets/js/bus.js")"></script>
+</head>
+<body>
+    
+     @Html.Action("PageHead", "PageCommon")
+    <div class="container-inner" style="width:820px">
+        <div id="container" class="resume-container ">
+            <div id="appSnap" class="myresume-content" v-loading="loading">
+                <div class="userinfo" v-cloak>
+                    <div class="item-primary" >
+                        <div v-if="profile">
+                            <div class="flex">
+                                <div class="photo-upload"></div>
+                                <div class="userinfo-box">
+                                    <div class="name" title="姓名">
+                                        {{profile.RealName}}
+                                    </div>
+                                    <div class="labels">
+                                        <p>
+                                            <span v-if="profile.Gender" title="性别">{{profile.Gender|genderFilter}}</span>
+                                            <span v-if="profile.Birthday" title="生日">{{profile.Birthday|formatDate}}</span>
+                                            <span v-if="profile.Education" title="学历">{{profile.Education}}</span>
+                                            <span v-if="profile.Residence" title="居住地">{{profile.Residence}}</span>
+                                        </p>
+                                        <p>
+                                            <span v-if="profile.CurrentCompany" title="当前公司">{{profile.CurrentCompany}}</span>
+                                            <span v-if="profile.CurrentPosition" title="当前职位">{{profile.CurrentPosition}}</span>
+                                            <span v-if="profile.AnnualSalary" title="年薪">{{profile.AnnualSalary}}</span>
+                                            <span v-if="profile.JobStatus" title="求职状态">{{profile.JobStatus|jobFilter}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="userinfo-introduc" v-if="profile.Introduction">
+                                <div class="title-sub">个人职业介绍与亮点</div>
+                                <div>
+                                    <div v-html="profile.Introduction"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="intention" >
+                    <div class="item-primary" >
+                        <div class="title">
+                            求职意向
+                        </div>
+                        <div class="intention-content" >
+                            <div class="intention-item primary-item" >
+                                <div class="intention-primary primary-item-p hover-none" >
+                                    <div >
+                                        <div>过往职能: <span v-text="intention.FunctionIDs"></span></div>
+                                        <div>意向城市: <span v-text="intention.LocationIDs"></span> </div>
+                                        <div v-if="intention.AnnualSalary">期望年薪: <span v-text="intention.AnnualSalary"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div ref="" class="work" >
+                    <div class="item-primary" >
+                        <div class="title">
+                            工作经历
+                        </div>
+                        <div class="work-content">
+                            <div class="work-item primary-item" v-for="(work,i) in workEx"  :key="i">
+                                <div class="work-primary primary-item-p" >
+                                    <div>
+                                        <div class="work-company" title="公司名称">
+                                            {{work.CompanyName}}
+                                        </div>
+                                        <div class="labels">
+                                            <p>
+                                                <span title="职位名称">{{work.Position}}</span>
+                                                <span title="起止时间">{{work.StartDate.slice(0,7) | formatDate}} ~ {{work.ExpirationDate.slice(0,7) | formatDate}}</span>
+                                            </p>
+                                        </div>
+                                        <div class="work-intro clearfix">
+                                            <div  title="工作介绍" v-html="work.Introduction"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="education" v-cloak>
+                    <div class="item-primary" >
+                        <div class="title">
+                            教育经历
+                        </div>
+                        <div class="education-content" >
+                            <div class="education-item primary-item" v-for="(education,i) in educationList"  :key="i">
+                                <div class="education-primary primary-item-p" >
+                                    <div>
+                                        <div class="education-name" title="学校名称">
+                                            {{education.SchoolName}}
+                                        </div>
+                                        <div class="labels">
+                                            <p>
+                                                <span title="专业">{{education.MajorSubject}}</span>
+                                                <span title="学历">{{education.Degree | educationTypeFilter}}</span>
+                                                <span title="起止时间">{{education.StartDate.slice(0,7) | formatDate}} ~ {{education.ExpirationDate.slice(0,7) | formatDate}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+
+    <script src="@Html.GetCssJsUrl("/Assets/js/resume/snap.js")"></script>
+</body>
+</html>

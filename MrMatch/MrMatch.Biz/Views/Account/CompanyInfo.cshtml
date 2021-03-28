@@ -1,0 +1,290 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "CompanyInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>基本信息</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>账号</li>
+                            <li class="active">基本信息</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="appCompanInfo" v-cloak>
+    <div class="animated fadeIn">
+
+        <div class="ui-typography row">
+            <div class="col-md-12">
+                <form action="" method="post" enctype="multipart/form-data" class="form-horizontal" id="CompanyInfoForm">
+
+                    <div class="card">
+                        <div class="card-header">
+                            @*<strong class="card-title" >基本信息</strong>*@
+                            <small class="card-title" style="color:grey;">请您完善下列信息（打*的为必填项），在您提交后24小时内，我们的客户经理将会直接电话联系您。</small>
+                            <div class="pull-right text-bold">
+                                <label class="text-info">{{checkStatus}}</label>
+                            </div>
+                        </div>
+
+                        <div class="card-body card-block">
+
+
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司全称</label></div>
+                                <div class="col col-12 col-md-10"><input type="text" id="CompanyName" name="CompanyName" placeholder="公司全称" disabled="" class="form-control" v-model="form.CompanyName"></div>
+                            </div>
+                            @*<div class="row form-group margin-bottom-30">
+            <div class="col col-md-2"><label for="text-input" class=" form-control-label">系统编码</label></div>
+            <div class="col col-12 col-md-10"><input type="text" id="UniCode" name="UniCode" placeholder="系统编码" class="form-control" disabled="" v-model="form.UniCode"></div>
+        </div>*@
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">公司官网 <span :class="validate.Website.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10"><input type="text" id="Website" name="Website" placeholder="公司官网" class="form-control" v-model="form.Website"></div>
+                            </div>
+
+
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">对外显示名称<span :class="validate.ShortName.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10"><input type="text" id="ShortName" name="ShortName" placeholder="对外显示名称" class="form-control" v-model="form.ShortName"></div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="text-input" class=" form-control-label">所在城市 <span :class="validate.Location.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10"><input type="text" id="Location" name="Location" placeholder="所在城市" class="form-control" v-model="form.Location"></div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="text-input" class=" form-control-label">公司地址</label></div>
+                                <div class="col col-12 col-md-10"><input type="text" id="Address" name="Address" placeholder="公司地址" class="form-control" v-model="form.Address"></div>
+                            </div>
+
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="select" class=" form-control-label">企业类型 <span :class="validate.CompnayType.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10">
+                                    <select name="CompnayType" id="CompnayType" class="form-control" data-default="form.CompnayType" v-model="form.CompnayType">
+                                        <option value="0" disabled selected>请选择类型</option>
+                                        <option value="11">中国大陆私有持股企业</option>
+                                        <option value="12">中国大陆国有企业</option>
+                                        <option value="13">非营利机构/政府机构</option>
+                                        <option value="14">中国港澳台地区独资企业</option>
+                                        <option value="15">中国和港澳台合资企业</option>
+                                        <option value="16">外资独资企业(非中国港澳台地区)</option>
+                                        <option value="17">中外合资</option>
+                                        @*<option value="17">私营企业</option>
+        <option value="20">港澳台商投资企业</option>
+        <option value="30">外商投资企业</option>*@
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="select" class=" form-control-label">融资阶段 <span :class="validate.FinancingStatus.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10">
+                                    <select name="FinancingStatus" id="FinancingStatus" class="form-control" data-default="form.FinancingStatus" v-model="form.FinancingStatus">
+                                        <option value="0" disabled selected>请选择类型</option>
+                                        <option value="11">不需要融资</option>
+                                        <option value="12">天使轮</option>
+                                        <option value="13">A轮</option>
+                                        <option value="14">B轮</option>
+                                        <option value="15">C轮</option>
+                                        <option value="16">D轮</option>
+                                        <option value="17">D轮+</option>
+                                        <option value="18">已上市</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="select" class=" form-control-label">注册资金</label></div>
+                                <div class="col col-12 col-md-10">
+                                    <select name="RegisteredCapital" id="RegisteredCapital" class="form-control" data-default="form.RegisteredCapital" v-model="form.RegisteredCapital">
+                                        <option value="0" disabled selected>请选择规模</option>
+                                        <option value="11">100万以下</option>
+                                        <option value="12">100-500万</option>
+                                        <option value="13">500-1000万</option>
+                                        <option value="14">1000-5000万</option>
+                                        <option value="15">5000万-1亿</option>
+                                        <option value="16">1-30亿</option>
+                                        <option value="17">30-80亿</option>
+                                        <option value="18">80-300亿</option>
+                                        <option value="19">300亿以上</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2"><label for="select" class=" form-control-label">企业规模 <span :class="validate.EmployeeNum.isPass?'hint':''">*</span></label></div>
+                                <div class="col col-12 col-md-10">
+                                    <select name="EmployeeNum" id="EmployeeNum" class="form-control" data-default="form.EmployeeNum" v-model="form.EmployeeNum">
+                                        <option value="0" disabled selected>请选择规模</option>
+                                        <option value="1">少于15人</option>
+                                        <option value="2">15-50人</option>
+                                        <option value="3">50-150人</option>
+                                        <option value="4">150-500人</option>
+                                        <option value="5">500-1000人</option>
+                                        <option value="6">1000-5000人</option>
+                                        <option value="7">5000-10000人</option>
+                                        <option value="8">10000人以上</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2">
+                                    <label for="disabled-input" class=" form-control-label">公司简介<span :class="validate.Summary.isPass?'hint':''">*</span></label>
+                                    <el-tooltip class="item" effect="dark" placement="right-start" popper-class="tooltips">
+                                        <div slot="content">
+                                            撰写60个字以内(包括标点符号)<br />
+                                            鲜活的雇主品牌故事的必备元素：<br />
+                                            <ul style="padding-left:20px;margin:0;">
+                                                <li>时间、地点、人物（雇主及雇员）</li>
+                                                <li>为什么干（初心）</li>
+                                                <li>怎么干（情节发展）</li>
+                                                <li>干成了什么（成就）</li>
+                                            </ul>
+                                        </div>
+                                        <i class="el-icon-question" style="color:grey"></i>
+                                    </el-tooltip>
+                                </div>
+                                <div class="col col-12 col-md-10"><input type="text" id="Summary" name="Summary" placeholder="请写下有情节的雇主品牌短故事，更抓得好员工的心。此处最多60字(包括标点符号)。" max="100" class="form-control" v-model="form.Summary"></div>
+                            </div>
+                            <div class="row form-group margin-bottom-30">
+                                <div class="col col-md-2">
+                                    <label for="textarea-input" class=" form-control-label">公司介绍</label>
+                                    <el-tooltip class="item" effect="dark" :content="toolTips.long" placement="right-start" popper-class="tooltips">
+                                        <div slot="content">
+                                            公司介绍包括但不仅限于（最多4000字）<br />
+                                            <ul style="padding-left:20px;margin:0;">
+                                                <li>公司概况（股东结构、公司历史）</li>
+                                                <li>主要产品或服务</li>
+                                                <li>年销售额</li>
+                                                <li>业务范围（主要市场&新兴市场）、</li>
+                                                <li>雇员数目及雇员特质描述（如：平均年龄、学历背景、共同志向、有趣度等）</li>
+                                                <li>公司总部位置及分支布局、</li>
+                                                <li>公司文化（使命、愿景、价值观等）</li>
+                                                <li>公司主要客户介绍、</li>
+                                                <li>公司所在行业上下游供应商</li>
+                                                <li>行业对标企业或竞争者</li>
+                                                <li>公司所获行业奖项及荣誉</li>
+                                                <li>公司对环境、消费者，及社会的贡献(简称企业社会责任CSR)</li>
+                                                <li>其他</li>
+                                            </ul>
+                                        </div>
+                                        <i class="el-icon-question" style="color:grey"></i>
+                                    </el-tooltip>
+                                </div>
+                                <div class="col col-12 col-md-10">
+                                    <textarea name="Introduce" id="Introduce" rows="4" v-model="form.Introduce" placeholder="说说你所在公司的闪光点，或发展故事吧。&#10;可以详尽介绍公司的发展历程，所获荣誉，产品或服务等，有助于候选人全面了解公司，作出决定。&#10;此处可写4000字。&#10;如需撰写帮助，请查看左侧“问号”标志。" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <hr />
+                            <div v-if="isAdmin" style="margin-top:30px;">
+                                <div class="row form-group margin-bottom-30 ">
+                                    <div class="col col-md-2"><label for="disabled-input" class=" form-control-label">联系人姓名 <span :class="validate.ContactName.isPass?'hint':''">*</span></label></div>
+                                    <div class="col col-12 col-md-10"><input type="text" id="ShortName" name="ShortName" placeholder="联系人姓名" class="form-control" v-model="form.ContactName"></div>
+                                </div>
+                                <div class="row form-group margin-bottom-30">
+                                    <div class="col col-md-2"><label for="text-input" class=" form-control-label">联系人手机号 <span :class="validate.CellPhone.isPass?'hint':''">*</span></label></div>
+                                    <div class="col col-12 col-md-10"><input type="text" id="Location" name="Location" placeholder="联系人手机号" class="form-control" v-model="form.CellPhone"></div>
+                                </div>
+                                <div class="row form-group margin-bottom-30">
+                                    <div class="col col-md-2"><label for="text-input" class=" form-control-label">联系人邮箱 <span :class="validate.Email.isPass?'hint':''">*</span></label></div>
+                                    <div class="col col-12 col-md-10"><input type="text" id="Address" name="Address" placeholder="联系人邮箱" class="form-control" v-model="form.Email"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <small class="color-gray" v-if="!isAdmin"><i class="far fa-info-circle"></i> 此功能仅管理可操作！</small>
+
+                            <button type="button" class="btn btn-info" id="FormSubmit" @@click="submitForm" :disabled="loading.submitLoading">
+                                <i :class="'far '+(loading.submitLoading?'el-icon-loading':'fa-dot-circle')"></i> 
+                                提交
+                            </button>
+                            @*<button type="button" class="btn btn-outline-info" id="FormReset" @@click="resetForm"><i class="fas fa-ban"></i> 重置</button>*@
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title" v-if="headerText">签约信息</strong><small class="pull-right color-gray-light">近3年内</small>
+                        <div class="pull-right text-bold">
+                        </div>
+                    </div>
+                    <div class="card-body card-block">
+                        <div class="" v-if="contracts&&contracts.length != 0">
+                            <div class="table-stats order-table ov-h margin-bottom-15">
+                                <table class="table ">
+                                    <thead>
+                                        <tr>
+                                            <th>签约日期</th>
+                                            <th>生效日期</th>
+                                            <th>到期日期</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, i) in contracts">
+                                            <td>{{item.ContractDate|dateFormat}}</td>
+                                            <td>{{item.StartDate|dateFormat}}</td>
+                                            <td>{{item.ExpireDate|dateFormat}}</td>
+                                            <td>{{computePutTime(item.ExpireDate)}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card" v-else>
+                            <div class="card-body bg-aqua">
+                                <i class="fa  fa-info-circle"></i> {{contractHelp}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- .animated -->
+</div>
+<style>
+    .hint {
+        color: red;
+    }
+
+    .tooltips {
+        max-width: 450px;
+        background: #fff !important;
+        color: #666 !important;
+        line-height: 1.4 !important;
+        border: 0 !important;
+        box-shadow: 0 0 5px 0 rgba(0,0,0,.2) !important;
+    }
+        .tooltips[x-placement^=right] .popper__arrow {
+            border-right-color: #e1e1e1 !important;
+        }
+
+            .tooltips[x-placement^=right] .popper__arrow::after {
+                border-right-color: #fff !important;
+            }
+</style>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/account/companyinfo.js")" ></script>

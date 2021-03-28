@@ -1,0 +1,193 @@
+﻿@using MrMatch.Biz.Handler;
+@{
+    ViewBag.Title = "Invite";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>已发起的邀请</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li>消息</li>
+                            <li class="active">已发起的邀请</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="appInvite" v-cloak>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col col-lg-9 candidate-list">
+                <div class="card candidate-card" v-for="(item,i) in inviteInfoList">
+                    <div class="card-header">
+                        <strong class="card-title"> {{(contract&&item.IsInvited)?item.RealName:item.WorkExperienceList[0].Position}} </strong>
+
+                        <span class="badge badge-info" v-if="computePutTime(item.LastModifiedTime)">本周发布</span>
+
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.Intention.AnnualSalary">
+                            <label class="color-gray">期望年薪：</label> {{(item.Intention.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;" v-if="item.AnnualSalary">
+                            <label class="color-gray">当前年薪：</label> {{(item.AnnualSalary/1000).toFixed(2)}}K
+                        </div>
+                        <div class="pull-right text-black mr-15" style="font-size:14px; margin-top:2px;">
+                            <label class="color-gray">所在城市：</label> {{item.Residence}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-2">
+                                <div class="avatar text-center">
+                                    <img v-if="item.AvatarUrl" :src="item.AvatarUrl" style="margin:0 auto;" />
+                                    <img v-else src="~/Content/assets/images/avatar/avatar2.png" style="margin:0 auto;" />
+                                </div>
+                            </div>
+                            <div class="col col-10 ">
+                                <div class="col col-12 school-block">
+                                    <i class="fas fa-school color-gray-light"></i>
+                                    <span class="padding-5">主要学历： {{item.EducationList[0].SchoolName}}，{{item.EducationList[0].Degree}}，{{item.EducationList[0].MajorSubject}}</span>
+
+                                </div>
+                                <div class="col col-12"><i class="fas fa-briefcase color-gray-light"></i> {{item.WorkExperienceList != null ? item.WorkExperienceList.length : "0"}} 职位，{{item.WorkYears}} 年</div>
+                                <div class="col col-12 no-padding">
+                                    <ul :ref="'workList'+i" class="timeline" v-if="item.WorkExperienceList">
+                                        <!-- timeline item -->
+                                        <li :class="j<2?'':'hidden'" v-for="(option, j) in item.WorkExperienceList">
+                                            <!-- timeline icon -->
+                                            <i class="far fa-circle"></i>
+                                            <div class="timeline-item">
+                                                <span class="text-black">{{option.Position}}</span>
+                                                <span>{{contract?option.CompanyName:option.CompanyAlias}}</span>
+                                                @*<span>{{formatTime(option.StartDate, option.ExpirationDate)}}</span>*@
+                                            <span>{{option.StartDate|dateFormat1}}-{{option.ExpirationDate|monthFormat}}</span>
+                                            </div>
+                                        </li>
+                                        <!-- END timeline item -->
+                                    </ul>
+                                    <button :ref="'workListBtn'+i" class="btn btn-sm btn-outline-default " v-if="true" style="margin-left:10px; " @@click="workListToggle(i)"><i class="fas fa-angle-double-down color-gray-light un-width"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body " style="border-top:1px #ddd solid;">
+
+                        <div class="direct-chat-messages " style="height:unset;" v-for="(option, j) in item.InviteInfo">
+                            <!-- Message. Default to the left -->
+                            <div class="direct-chat-msg">
+                                <div class="direct-chat-info clearfix">
+                                    <span class="direct-chat-name pull-left">{{accountName}}</span>
+                                    <span class="direct-chat-timestamp pull-right"><i class="far fa-clock"></i>{{option.CreatedTime|dateFormat}}</span>
+                                </div>
+                                <!-- /.direct-chat-info -->
+                                <div class="direct-chat-img">
+                                    <i class="fas fa-user-circle color-gray-light " style="float:left; font-size:30px; margin:5px;"></i>
+                                </div>
+                                <!-- /.direct-chat-img -->
+                                <div class="direct-chat-text ">
+                                    <pre>{{option.InviteLetter}}</pre>
+                                </div>
+                                <!-- /.direct-chat-text -->
+                            </div>
+
+
+
+                            <span class="pull-right color-gray-light small" v-if="option.InviteStatus==0&&(Date.parse(option.ExpirationDate)<Date.now())">已过期 <i class="far fa-calendar-times"></i>{{option.ExpirationDate|dateFormat}}</span>
+                            <span class=" pull-right text-info small" v-else-if="option.InviteStatus==0&&(Date.parse(option.ExpirationDate)>=Date.now())">待回应 <i class="far fa-calendar-alt"></i>{{option.ExpirationDate|dateFormat}}</span>
+
+                            <div class="direct-chat-primary" v-if="option.InviteStatus==1">
+                                <div class="direct-chat-msg right col-md-8 pull-right">
+                                    <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">{{item.RealName}}</span>
+                                        <span class="direct-chat-timestamp pull-left"><i class="far fa-clock"></i>{{option.LastModifiedTime|dateFormat}}</span>
+                                    </div>
+                                    <!-- /.direct-chat-info -->
+                                    <img class="direct-chat-img" :src="item.AvatarUrl" v-if="item.AvatarUrl" />
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                    <div class="direct-chat-text">
+                                        候选人已接受您的邀约 <i class="fa fa-check-circle"></i> <a class="btn btn-sm btn-outline-info" :href="option.InterviewID>0?'/job/interviewitem?id='+option.InterviewID:'/job/interview'"><i class="fas fa-handshake"></i> 点击查看候选人电话</a>
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                            </div>
+                            <div class="direct-chat-warning" v-if="option.InviteStatus==2">
+                                <div class="direct-chat-msg right col-md-8 pull-right">
+                                    <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">{{item.RealName}}</span>
+                                        <span class="direct-chat-timestamp pull-left"><i class="far fa-clock"></i>{{option.LastModifiedTime|dateFormat}}</span>
+                                    </div>
+                                    <!-- /.direct-chat-info -->
+                                    <img class="direct-chat-img" :src="item.AvatarUrl" v-if="item.AvatarUrl" />
+                                    <img class="direct-chat-img" src="~/Content/assets/images/avatar/avatar2.png" v-else />
+                                    <!-- /.direct-chat-img -->
+                                    <div class="direct-chat-text">
+                                        候选人已拒绝您的邀约 <i class="fa fa-times-circle"></i>
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                            </div>
+
+                            <!-- /.direct-chat-msg -->
+                        </div>
+                        <!-- /.direct-chat-msg -->
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="pull-right color-gray small ">
+                            <a class="btn btn-sm btn-info" :href="'/candidate/item?code='+item.UniCode" target="_blank"><i class="fa fa-file-alt"></i> 查看简历</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <el-pagination @@current-change="currentChange"
+                                       layout="prev, pager, next"
+                                       :page-size="form.pageSize"
+                                       :current-page="form.pageIndex"
+                                       :total="form.total">
+                        </el-pagination>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col col-md-3">
+                <div class="card calling-card">
+                    <div class="card-body ">
+                        <div class="calling-head">需要帮助？</div>
+                        <div class="calling-title">
+                            杨森华
+                            <small>客户成功经理</small>
+                        </div>
+                        <div class="calling-content">
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">联系电话：</div>
+                                <div class="calling-val">+86-13818163713</div>
+                            </div>
+                            <div class="calling-item">
+                                <div class="calling-key color-gray">邮箱：</div>
+                                <div class="calling-val">business@mrmatch.net</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="@Html.GetCssJsUrl("/Assets/Js/job/invite.js")"></script>

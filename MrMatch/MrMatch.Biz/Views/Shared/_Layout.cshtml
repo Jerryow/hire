@@ -1,0 +1,67 @@
+﻿@using MrMatch.Biz.Handler;
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
+    <title>猫奇 Mr. Match</title>
+    <meta name="description" content="Mr. Match">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--[if It IE 9]>
+        <script>
+        document.getElementsByTagName('body')[0].style.display = 'none'
+        window.onload = function(){
+          document.getElementsByTagName('body')[0].innerHTML = '<div style="text-align:center;margin-top:50px;font-size:20px;"><img src="/Assets/images/ie.png" /><p>你的IE浏览器版本过低，请升级至IE10以上版本或更换浏览器</p></div>'
+          document.getElementsByTagName('body')[0].style.display = 'block'
+        }
+    </script>
+    <![endif]-->
+    <!-- Font Awesome Icons-->
+    <link href="/Content/fontawesome-free-5.4.1-web/css/all.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/Content/assets/css/normalize.css">
+    <link rel="stylesheet" href="/Content/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Content/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="/Content/assets/css/pe-icon-7-filled.css">
+    <link rel="stylesheet" href="/Content/assets/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/Content/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="/Content/assets/css/style.css?v=1.1">
+
+    <link href="~/Assets/css/style.css" rel="stylesheet" />
+
+    @*<script src="~/Scripts/browser.min.js"></script>
+    <script src="~/Scripts/browser-polyfill.min.js"></script>*@
+
+    <script src="/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="/Content/assets/js/popper.min.js"></script>
+    <script src="/Content/assets/js/plugins.js"></script>
+    <script src="/Content/assets/js/main.js"></script>
+
+
+    <link href="~/Content/ElementUI/element-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/ElementUI/element-ui.js"></script>
+    <script src="~/Scripts/axios.min.js"></script>
+
+    <script src="@Html.GetCssJsUrl("/Js/config.js")" > </script>
+    <script src="@Html.GetCssJsUrl("/Scripts/Config/ChkUtil.js")"></script>
+
+    <script type="text/javascript">
+        var _ticket = '@MrMatch.Biz.Handler.ActionFilter.CurrID.Tickets';
+    </script>
+</head>
+
+<body>
+    @Html.Action("PageSide", "PageCommon")
+    <!-- Right Panel -->
+    <div id="right-panel" class="right-panel">
+        <div style="min-height:1000px; max-width:1244px; display:block;" class="clearfix">
+            @Html.Action("PageHead", "PageCommon")
+            @RenderBody()
+        </div>
+        @Html.Action("PageFoot", "PageCommon")
+    </div>
+
+</body>

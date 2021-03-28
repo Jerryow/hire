@@ -1,0 +1,123 @@
+﻿@using MrMatch.Admin.Handler;
+@{
+    ViewBag.Title = "MessageConfigItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        <i class="fas fa-hand-pointer"></i> 消息配置
+        <small>系统数据</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fas fa-tachometer-alt"></i> 仪表盘</li>
+        <li><i class="fas fa-handshake"></i> 系统数据</li>
+        <li class="active"><i class="fas fa-hand-pointer"></i> 消息配置</li>
+    </ol>
+</section>
+<section class="content">
+    <div class="box" id="appMsgConfigItem">
+        <div class="box-body">
+            <el-form ref="aupdateForm" :model="aupdateForm" :label-position="labelPosition" :rules="rules" class="demo-form-inline">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="配置类型*" prop="ConfigType">
+                            <el-select v-model="aupdateForm.ConfigType" placeholder="请选择活动区域" style="width:60%;" @@change="changes">
+                                <el-option v-for="item in options" :label="item.label" :value="item.value"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="供应商名字*" prop="ProviderName">
+                            <el-input v-model="aupdateForm.ProviderName" placeholder="请输入供应商名字(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="Api名*" prop="ApiName">
+                            <el-input v-model="aupdateForm.ApiName" placeholder="请输入Api名(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="Api编码*" prop="ApiCode">
+                            <el-input v-model="aupdateForm.ApiCode" placeholder="请输入Api编码(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="Api地址*" prop="ApiUrl">
+                            <el-input v-model="aupdateForm.ApiUrl" placeholder="请输入Api地址(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="端口*" prop="Port">
+                            <el-input v-model="aupdateForm.Port" placeholder="请输入端口(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="发送者名称*" prop="SenderName">
+                            <el-input v-model="aupdateForm.SenderName" placeholder="请输入发送者名称(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="登录名*" prop="LoginName">
+                            <el-input v-model="aupdateForm.LoginName" placeholder="请输入登录名(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="密码*" prop="Password">
+                            <el-input type="password" style="display:none;"></el-input>
+                            <el-input v-model="aupdateForm.Password" type="password" placeholder="请输入密码(必填)" style="width:60%;" auto-complete="new-password"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="验证密钥*" prop="VerifyKey">
+                            <el-input v-model="aupdateForm.VerifyKey" placeholder="请输入验证密钥(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="签名*" prop="SignMark">
+                            <el-input v-model="aupdateForm.SignMark" placeholder="请输入签名(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="发送限制次数*" prop="TimesLimit">
+                            <el-input v-model="aupdateForm.TimesLimit" placeholder="请输入发送限制次数(必填)" style="width:60%;"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="是否SSL加密*">
+                            <el-switch v-model="aupdateForm.EnableSsl"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="是否启用*">
+                            <el-switch v-model="aupdateForm.IsActivated"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            @*<div v-loading="loading" :visible.sycn="loading"></div>*@
+            <span slot="footer" class="dialog-footer">
+                @*<el-button type="primary" @@click="submitForm('form')">提交</el-button>*@
+                <el-button type="primary" @@click="submitForm('aupdateForm')">提交</el-button>
+                <el-button @@click="redirect">返回</el-button>
+            </span>
+        </div>
+    </div>
+</section>
+
+
+
+<script src="@Html.GetCssJsUrl("/Js/system/MessageConfigItem.js")">
+</script>
